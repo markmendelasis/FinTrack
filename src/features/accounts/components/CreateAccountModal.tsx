@@ -1,6 +1,7 @@
 import { useState, type FormEvent } from 'react';
 import { Button } from '@/components/ui/Button';
 import { X, Wallet, AlertCircle } from 'lucide-react';
+import { formatErrorMessage } from '@/lib/utils/formatters';
 import type { CreateAccountInput } from '../types/account.types';
 
 interface CreateAccountModalProps {
@@ -44,7 +45,7 @@ export function CreateAccountModal({ isOpen, onClose, onSubmit }: CreateAccountM
       setInitialBalance('0.00');
       onClose();
     } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : 'Failed to create account';
+      const message = formatErrorMessage(err, 'Account was not successfully created');
       setError(message);
     } finally {
       setIsSubmitting(false);

@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/Button';
 import { User, ShieldAlert, KeyRound, Check, Edit2 } from 'lucide-react';
 import { useAuth } from '@/features/auth/hooks/useAuth';
 import { authService } from '@/features/auth/services/authService';
+import { formatErrorMessage } from '@/lib/utils/formatters';
 import toast from 'react-hot-toast';
 
 export function SettingsPage() {
@@ -36,7 +37,7 @@ export function SettingsPage() {
       setIsEditingName(false);
       toast.success('Display name updated successfully');
     } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : 'Failed to update name';
+      const message = formatErrorMessage(err, 'Display name was not updated');
       toast.error(message);
     } finally {
       setIsSavingName(false);

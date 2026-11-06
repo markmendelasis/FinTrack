@@ -37,10 +37,18 @@ export function AccountAuditLogModal({ account, isOpen, onClose }: AccountAuditL
     switch (action) {
       case 'INSERT':
         return 'bg-emerald-100 text-emerald-800 border-emerald-200';
+      case 'INCOME':
+        return 'bg-blue-100 text-blue-800 border-blue-200';
+      case 'EXPENSE':
+        return 'bg-rose-100 text-rose-800 border-rose-200';
+      case 'TRANSFER':
+        return 'bg-amber-100 text-amber-800 border-amber-200';
+      case 'DELETE':
+        return 'bg-rose-100 text-rose-800 border-rose-200';
       case 'DEACTIVATE':
         return 'bg-amber-100 text-amber-800 border-amber-200';
       case 'REACTIVATE':
-        return 'bg-blue-100 text-blue-800 border-blue-200';
+        return 'bg-teal-100 text-teal-800 border-teal-200';
       case 'UPDATE':
       default:
         return 'bg-slate-100 text-slate-700 border-slate-200';

@@ -1,5 +1,6 @@
 import { useState, useEffect, type FormEvent } from 'react';
 import { Button } from '@/components/ui/Button';
+import { formatErrorMessage } from '@/lib/utils/formatters';
 import { X, TrendingUp, TrendingDown, ArrowLeftRight, AlertCircle } from 'lucide-react';
 import type {
   TransactionType,
@@ -157,7 +158,7 @@ export function CreateTransactionModal({
 
       onClose();
     } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : 'Failed to record transaction';
+      const message = formatErrorMessage(err, 'Transaction was not successfully created');
       setError(message);
     } finally {
       setIsSubmitting(false);

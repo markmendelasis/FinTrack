@@ -1,7 +1,7 @@
 import { useState, useEffect, type FormEvent } from 'react';
 import { Button } from '@/components/ui/Button';
 import { X, Edit2, AlertCircle, Lock } from 'lucide-react';
-import { formatDate } from '@/lib/utils/formatters';
+import { formatDate, formatErrorMessage } from '@/lib/utils/formatters';
 import type {
   TransactionWithDetails,
   TransactionType,
@@ -90,7 +90,7 @@ export function EditTransactionModal({
       });
       onClose();
     } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : 'Failed to update transaction';
+      const message = formatErrorMessage(err, 'Transaction was not successfully updated');
       setError(message);
     } finally {
       setIsSubmitting(false);

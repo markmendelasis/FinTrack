@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import toast from 'react-hot-toast';
+import { formatErrorMessage } from '@/lib/utils/formatters';
 import { transactionService } from '../services/transactionService';
 import type {
   TransactionWithDetails,
@@ -70,10 +71,10 @@ export function useTransactions(initialFilters: TransactionFilterParams = {}) {
   const handleCreateIncome = async (input: CreateIncomeInput) => {
     try {
       await transactionService.createIncome(input);
-      toast.success('Income transaction recorded');
+      toast.success('Income transaction recorded successfully');
       await fetchTransactions();
     } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : 'Failed to record income';
+      const message = formatErrorMessage(err, 'Transaction was not successfully created');
       toast.error(message);
       throw err;
     }
@@ -82,10 +83,10 @@ export function useTransactions(initialFilters: TransactionFilterParams = {}) {
   const handleCreateExpense = async (input: CreateExpenseInput) => {
     try {
       await transactionService.createExpense(input);
-      toast.success('Expense transaction recorded');
+      toast.success('Expense transaction recorded successfully');
       await fetchTransactions();
     } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : 'Failed to record expense';
+      const message = formatErrorMessage(err, 'Transaction was not successfully created');
       toast.error(message);
       throw err;
     }
@@ -97,7 +98,7 @@ export function useTransactions(initialFilters: TransactionFilterParams = {}) {
       toast.success('Transfer completed successfully');
       await fetchTransactions();
     } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : 'Failed to complete transfer';
+      const message = formatErrorMessage(err, 'Transfer was not successfully created');
       toast.error(message);
       throw err;
     }
@@ -109,7 +110,7 @@ export function useTransactions(initialFilters: TransactionFilterParams = {}) {
       toast.success('Transaction updated successfully');
       await fetchTransactions();
     } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : 'Failed to update transaction';
+      const message = formatErrorMessage(err, 'Transaction was not successfully updated');
       toast.error(message);
       throw err;
     }
@@ -121,7 +122,7 @@ export function useTransactions(initialFilters: TransactionFilterParams = {}) {
       toast.success('Transaction deleted and balance reversed');
       await fetchTransactions();
     } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : 'Could not delete transaction';
+      const message = formatErrorMessage(err, 'Transaction could not be deleted');
       toast.error(message);
       throw err;
     }

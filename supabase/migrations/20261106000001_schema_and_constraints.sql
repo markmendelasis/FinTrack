@@ -149,7 +149,7 @@ CREATE TABLE IF NOT EXISTS public.account_audit_logs (
     audit_log_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     account_id UUID NOT NULL REFERENCES public.accounts(account_id) ON DELETE CASCADE,
     action VARCHAR(50) NOT NULL
-        CONSTRAINT chk_account_audit_action CHECK (action IN ('INSERT', 'UPDATE', 'DEACTIVATE', 'REACTIVATE')),
+        CONSTRAINT chk_account_audit_action CHECK (action IN ('INSERT', 'UPDATE', 'DEACTIVATE', 'REACTIVATE', 'INCOME', 'EXPENSE', 'TRANSFER', 'DELETE')),
     action_description VARCHAR(500) NOT NULL,
     old_values JSONB NULL,
     new_values JSONB NULL,

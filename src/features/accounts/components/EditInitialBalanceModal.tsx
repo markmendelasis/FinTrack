@@ -1,6 +1,7 @@
 import { useState, useEffect, type FormEvent } from 'react';
 import { Button } from '@/components/ui/Button';
 import { X, Edit3, AlertCircle } from 'lucide-react';
+import { formatErrorMessage } from '@/lib/utils/formatters';
 import type { AccountWithBalance, UpdateInitialBalanceInput } from '../types/account.types';
 
 interface EditInitialBalanceModalProps {
@@ -47,7 +48,7 @@ export function EditInitialBalanceModal({
       });
       onClose();
     } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : 'Failed to update initial balance';
+      const message = formatErrorMessage(err, 'Initial balance could not be updated');
       setError(message);
     } finally {
       setIsSubmitting(false);

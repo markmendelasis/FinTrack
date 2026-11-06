@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import toast from 'react-hot-toast';
+import { formatErrorMessage } from '@/lib/utils/formatters';
 import { reportService } from '../services/reportService';
 import type {
   ReportFilterState,
@@ -63,7 +64,7 @@ export function useReports() {
       const data = await reportService.generateReport(filters);
       setReportData(data);
     } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : 'Failed to generate financial report';
+      const msg = formatErrorMessage(err, 'Report could not be generated');
       console.error('[useReports] Error generating report:', err);
       setError(msg);
       toast.error(msg);

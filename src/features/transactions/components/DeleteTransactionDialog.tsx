@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/Button';
 import { X, Trash2, AlertTriangle } from 'lucide-react';
-import { formatCurrency, formatDate } from '@/lib/utils/formatters';
+import { formatCurrency, formatDate, formatErrorMessage } from '@/lib/utils/formatters';
 import type { TransactionWithDetails } from '../types/transaction.types';
 
 interface DeleteTransactionDialogProps {
@@ -29,7 +29,7 @@ export function DeleteTransactionDialog({
       await onConfirm(transaction.transaction_id);
       onClose();
     } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : 'Could not delete transaction';
+      const message = formatErrorMessage(err, 'Transaction could not be deleted');
       setError(message);
     } finally {
       setIsDeleting(false);

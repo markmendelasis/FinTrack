@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import toast from 'react-hot-toast';
+import { formatErrorMessage } from '@/lib/utils/formatters';
 import { accountService } from '../services/accountService';
 import type {
   AccountWithBalance,
@@ -53,7 +54,7 @@ export function useAccounts() {
       toast.success(`Account "${input.account_name.trim()}" created successfully`);
       await fetchAccounts();
     } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : 'Could not create account';
+      const message = formatErrorMessage(err, 'Account was not successfully created');
       toast.error(message);
       throw err;
     }
@@ -65,7 +66,7 @@ export function useAccounts() {
       toast.success('Initial balance updated successfully');
       await fetchAccounts();
     } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : 'Could not update initial balance';
+      const message = formatErrorMessage(err, 'Initial balance could not be updated');
       toast.error(message);
       throw err;
     }
@@ -77,7 +78,7 @@ export function useAccounts() {
       toast.success(`Account "${accountName}" deactivated`);
       await fetchAccounts();
     } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : 'Could not deactivate account';
+      const message = formatErrorMessage(err, 'Account could not be deactivated');
       toast.error(message);
       throw err;
     }
@@ -89,7 +90,7 @@ export function useAccounts() {
       toast.success(`Account "${accountName}" reactivated`);
       await fetchAccounts();
     } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : 'Could not reactivate account';
+      const message = formatErrorMessage(err, 'Account could not be reactivated');
       toast.error(message);
       throw err;
     }

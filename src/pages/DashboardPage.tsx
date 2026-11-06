@@ -1,23 +1,10 @@
-import { useState } from 'react';
-import toast from 'react-hot-toast';
 import { Card } from '@/components/ui/Card';
 import { ShieldCheck, CheckCircle2, Calendar } from 'lucide-react';
 import { useAuth } from '@/features/auth/hooks/useAuth';
 import { useDashboardData } from '@/features/dashboard/hooks/useDashboardData';
-import { useTransactions } from '@/features/transactions/hooks/useTransactions';
-import { accountService } from '@/features/accounts/services/accountService';
 import { DashboardSummaryCards } from '@/features/dashboard/components/DashboardSummaryCards';
 import { ExpenseCategoryChart } from '@/features/dashboard/components/ExpenseCategoryChart';
 import { RecentTransactionsWidget } from '@/features/dashboard/components/RecentTransactionsWidget';
-import { QuickActionsWidget } from '@/features/dashboard/components/QuickActionsWidget';
-import { CreateTransactionModal } from '@/features/transactions/components/CreateTransactionModal';
-import { CreateAccountModal } from '@/features/accounts/components/CreateAccountModal';
-import type {
-  CreateIncomeInput,
-  CreateExpenseInput,
-  CreateTransferInput,
-} from '@/features/transactions/types/transaction.types';
-import type { CreateAccountInput } from '@/features/accounts/types/account.types';
 
 export function DashboardPage() {
   const { user, profile } = useAuth();
@@ -27,21 +14,7 @@ export function DashboardPage() {
     recentTransactions,
     accounts,
     isLoading,
-    refresh,
   } = useDashboardData();
-
-  const {
-    transactionTypes,
-    categories,
-    createIncome,
-    createExpense,
-    createTransfer,
-  } = useTransactions();
-
-  // Modal states for Quick Actions
-  const [isTxModalOpen, setIsTxModalOpen] = useState(false);
-  const [txModalTab, setTxModalTab] = useState<'Expense' | 'Income' | 'Transfer'>('Expense');
-  const [isAccountModalOpen, setIsAccountModalOpen] = useState(false);
 
   const displayName = profile?.user_name || user?.user_metadata?.user_name || 'FinTrack User';
   const todayFormatted = new Date().toLocaleDateString('en-US', {
@@ -51,80 +24,30 @@ export function DashboardPage() {
     year: 'numeric',
   });
 
-  const handleOpenTxModal = (tab: 'Expense' | 'Income' | 'Transfer') => {
-    setTxModalTab(tab);
-    setIsTxModalOpen(true);
-  };
-
-  const handleCreateIncome = async (input: CreateIncomeInput) => {
-    await createIncome(input);
-    refresh();
-  };
-
-  const handleCreateExpense = async (input: CreateExpenseInput) => {
-    await createExpense(input);
-    refresh();
-  };
-
-  const handleCreateTransfer = async (input: CreateTransferInput) => {
-    await createTransfer(input);
-    refresh();
-  };
-
-  const handleCreateAccount = async (input: CreateAccountInput) => {
-    try {
-      await accountService.createAccount(input);
-      toast.success(`Account "${input.account_name}" created successfully`);
-      setIsAccountModalOpen(false);
-      refresh();
-    } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : 'Failed to create account';
-      toast.error(msg);
-      throw err;
-    }
-  };
-
   const activeAccounts = accounts.filter((a) => a.status === 'ACTIVE');
 
   return (
     <div className="space-y-6">
-      {/* Welcome Banner & Quick Actions */}
+      {/* Welcome Banner */}
       <div className="rounded-2xl bg-gradient-to-r from-emerald-800 via-emerald-900 to-teal-950 p-6 text-white shadow-sm">
-        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
-          <div>
-            <div className="flex flex-wrap items-center gap-2">
-              <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/20 px-3 py-1 text-xs font-medium text-emerald-200 border border-emerald-400/30">
-                <ShieldCheck className="h-3.5 w-3.5 text-emerald-400" />
-                Live PostgreSQL RPC & Integrity Active
-              </span>
-              <span className="inline-flex items-center gap-1.5 text-xs text-emerald-200/80">
-                <Calendar className="h-3.5 w-3.5" />
-                {todayFormatted}
-              </span>
-            </div>
-
-            <h2 className="mt-3 text-2xl font-bold tracking-tight text-white">
-              Welcome back, {displayName}
-            </h2>
-            <p className="mt-1 text-sm text-emerald-100 max-w-2xl">
-              Track income, manage expenses, and monitor financial account balances with
-              database-guaranteed precision.
-            </p>
-          </div>
-
-          {/* Quick Actions Bar */}
-          <div className="bg-white/10 backdrop-blur-md p-3 rounded-xl border border-white/10 shrink-0">
-            <p className="text-xs font-semibold uppercase tracking-wider text-emerald-200 mb-2">
-              Quick Actions
-            </p>
-            <QuickActionsWidget
-              onAddIncome={() => handleOpenTxModal('Income')}
-              onAddExpense={() => handleOpenTxModal('Expense')}
-              onTransfer={() => handleOpenTxModal('Transfer')}
-              onAddAccount={() => setIsAccountModalOpen(true)}
-            />
-          </div>
+        <div className="flex flex-wrap items-center gap-2">
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/20 px-3 py-1 text-xs font-medium text-emerald-200 border border-emerald-400/30">
+            <ShieldCheck className="h-3.5 w-3.5 text-emerald-400" />
+            Live PostgreSQL RPC & Integrity Active
+          </span>
+          <span className="inline-flex items-center gap-1.5 text-xs text-emerald-200/80">
+            <Calendar className="h-3.5 w-3.5" />
+            {todayFormatted}
+          </span>
         </div>
+
+        <h2 className="mt-3 text-2xl font-bold tracking-tight text-white">
+          Welcome back, {displayName}
+        </h2>
+        <p className="mt-1 text-sm text-emerald-100 max-w-2xl">
+          Track income, manage expenses, and monitor financial account balances with
+          database-guaranteed precision.
+        </p>
       </div>
 
       {/* Summary Cards Grid */}
@@ -173,9 +96,9 @@ export function DashboardPage() {
             <div className="flex items-start gap-2.5">
               <CheckCircle2 className="h-5 w-5 text-emerald-600 shrink-0 mt-0.5" />
               <div>
-                <p className="font-semibold text-slate-800">Interactive Charts & Summaries (Milestone 6)</p>
+                <p className="font-semibold text-slate-800">Dedicated Feature Modules</p>
                 <p className="text-xs text-slate-500">
-                  Recharts-powered 6-month cash flow trends, donut category breakdowns, and account allocation.
+                  Transactions managed strictly in the Transactions module; financial accounts managed in the Accounts module.
                 </p>
               </div>
             </div>
@@ -187,7 +110,7 @@ export function DashboardPage() {
               <div>
                 <p className="font-semibold text-slate-800">Automated Audit Trail Logging</p>
                 <p className="text-xs text-slate-500">
-                  Transaction mutations, soft deletions, and account balance changes logged to separate immutable audit tables.
+                  Transaction mutations and soft deletions automatically recorded in account and transaction audit tables with readable account names.
                 </p>
               </div>
             </div>
@@ -214,25 +137,6 @@ export function DashboardPage() {
           </div>
         </div>
       </Card>
-
-      {/* Quick Action Modals */}
-      <CreateTransactionModal
-        isOpen={isTxModalOpen}
-        onClose={() => setIsTxModalOpen(false)}
-        transactionTypes={transactionTypes}
-        categories={categories}
-        accounts={accounts}
-        initialTab={txModalTab}
-        onCreateIncome={handleCreateIncome}
-        onCreateExpense={handleCreateExpense}
-        onCreateTransfer={handleCreateTransfer}
-      />
-
-      <CreateAccountModal
-        isOpen={isAccountModalOpen}
-        onClose={() => setIsAccountModalOpen(false)}
-        onSubmit={handleCreateAccount}
-      />
     </div>
   );
 }
