@@ -39,10 +39,13 @@ export function TransactionAuditLogModal({
 
   const getActionBadge = (action: string) => {
     switch (action) {
+      case 'CREATED':
       case 'INSERT':
         return 'bg-emerald-100 text-emerald-800 border-emerald-200';
+      case 'DELETED':
       case 'DELETE':
         return 'bg-rose-100 text-rose-800 border-rose-200';
+      case 'UPDATED':
       case 'UPDATE':
       default:
         return 'bg-blue-100 text-blue-800 border-blue-200';
@@ -65,10 +68,10 @@ export function TransactionAuditLogModal({
           <div className="rounded-xl bg-purple-100 p-2.5 text-purple-700">
             <History className="h-6 w-6" />
           </div>
-          <div>
+          <div className="min-w-0 flex-1 pr-6">
             <h3 className="text-lg font-bold text-slate-900">Transaction Audit History</h3>
-            <p className="text-xs text-slate-500">
-              Transaction ID: <span className="font-mono">{transaction.transaction_id.slice(0, 8)}...</span> &bull; {transaction.type_name}
+            <p className="text-xs text-slate-500 break-all">
+              Transaction ID: <span className="font-mono font-semibold text-slate-800 select-all">{transaction.transaction_id}</span> &bull; {transaction.type_name}
             </p>
           </div>
         </div>
@@ -120,7 +123,7 @@ export function TransactionAuditLogModal({
                   </span>
                   <span className="inline-flex items-center gap-1 text-emerald-700 font-medium">
                     <ShieldCheck className="h-3 w-3" />
-                    Verified Trigger
+                    System Verified
                   </span>
                 </div>
               </div>
@@ -130,7 +133,7 @@ export function TransactionAuditLogModal({
 
         <div className="pt-4 border-t border-slate-100 flex items-center justify-between shrink-0">
           <p className="text-[11px] text-slate-400">
-            Audit logging is atomic with transaction changes.
+            All transaction changes are automatically recorded to your permanent history.
           </p>
           <Button variant="outline" size="sm" onClick={onClose}>
             Close

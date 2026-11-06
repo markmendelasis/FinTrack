@@ -1,7 +1,8 @@
 -- =============================================================================
 -- Migration: 20261106000007_audit_trail_enhancements.sql
--- Description: Enhances audit triggers so that transactions also log into
---              account_audit_logs with readable account names (no raw UUIDs).
+-- Description: Enhances audit triggers with user-friendly action names ('CREATED',
+--              'UPDATED', 'DELETED', etc.), human-readable account names, and
+--              cross-logs transactions to account_audit_logs.
 -- Standards: Follows BACKEND_ARCHITECTURE.md Section 8 and SECURITY.md Section 7.
 -- =============================================================================
 
@@ -11,7 +12,11 @@ ALTER TABLE public.account_audit_logs
 
 ALTER TABLE public.account_audit_logs
     ADD CONSTRAINT chk_account_audit_action
-    CHECK (action IN ('INSERT', 'UPDATE', 'DEACTIVATE', 'REACTIVATE', 'INCOME', 'EXPENSE', 'TRANSFER', 'DELETE'));
+    CHECK (action IN (
+        'CREATED', 'UPDATED', 'DEACTIVATED', 'REACTIVATED',
+        'INCOME', 'EXPENSE', 'TRANSFER', 'DELETED',
+        'INSERT', 'UPDATE', 'DEACTIVATE', 'REACTIVATE', 'DELETE'
+    ));
 
 -- 2. Enhanced Trigger Function: process_transaction_audit_log
 CREATE OR REPLACE FUNCTION public.process_transaction_audit_log()
@@ -23,34 +28,31 @@ AS $$
 DECLARE
     v_action VARCHAR(50);
     v_action_desc VARCHAR(500);
-    v_account_desc VARCHAR(500);
     v_type_name VARCHAR(50);
     v_source_account_name VARCHAR(100);
     v_dest_account_name VARCHAR(100);
     v_actor UUID;
 BEGIN
-    -- Determine actor
-    v_actor := COALESCE(auth.uid(), NEW.updated_by, NEW.created_by, OLD.updated_by, OLD.created_by);
-
-    -- Retrieve transaction type name
-    SELECT type_name INTO v_type_name
-    FROM public.transaction_types
-    WHERE transaction_type_id = COALESCE(NEW.transaction_type_id, OLD.transaction_type_id);
-
-    -- Retrieve source account name
-    SELECT account_name INTO v_source_account_name
-    FROM public.accounts
-    WHERE account_id = COALESCE(NEW.account_id, OLD.account_id);
-
-    -- Retrieve destination account name if applicable
-    IF NEW.destination_account_id IS NOT NULL OR (TG_OP = 'UPDATE' AND OLD.destination_account_id IS NOT NULL) THEN
-        SELECT account_name INTO v_dest_account_name
-        FROM public.accounts
-        WHERE account_id = COALESCE(NEW.destination_account_id, OLD.destination_account_id);
-    END IF;
-
     IF TG_OP = 'INSERT' THEN
-        v_action := 'INSERT';
+        v_actor := COALESCE(auth.uid(), NEW.created_by);
+        v_action := 'CREATED';
+
+        -- Retrieve transaction type name
+        SELECT type_name INTO v_type_name
+        FROM public.transaction_types
+        WHERE transaction_type_id = NEW.transaction_type_id;
+
+        -- Retrieve source account name
+        SELECT account_name INTO v_source_account_name
+        FROM public.accounts
+        WHERE account_id = NEW.account_id;
+
+        -- Retrieve destination account name if applicable
+        IF NEW.destination_account_id IS NOT NULL THEN
+            SELECT account_name INTO v_dest_account_name
+            FROM public.accounts
+            WHERE account_id = NEW.destination_account_id;
+        END IF;
 
         IF v_type_name = 'Transfer' THEN
             IF NEW.transfer_fee > 0 THEN
@@ -80,7 +82,7 @@ BEGIN
                                     COALESCE(v_source_account_name, 'Account'));
         END IF;
 
-        -- Insert into transaction_audit_logs
+        -- 1. Insert into transaction_audit_logs with action = 'CREATED'
         INSERT INTO public.transaction_audit_logs (
             transaction_id,
             action,
@@ -99,7 +101,7 @@ BEGIN
             NOW()
         );
 
-        -- Insert into account_audit_logs for source account
+        -- 2. Insert into account_audit_logs for source account
         INSERT INTO public.account_audit_logs (
             account_id,
             action,
@@ -114,7 +116,7 @@ BEGIN
                 WHEN v_type_name = 'Income' THEN 'INCOME'
                 WHEN v_type_name = 'Expense' THEN 'EXPENSE'
                 WHEN v_type_name = 'Transfer' THEN 'TRANSFER'
-                ELSE 'UPDATE'
+                ELSE 'CREATED'
             END,
             v_action_desc,
             NULL,
@@ -130,7 +132,7 @@ BEGIN
             NOW()
         );
 
-        -- If Transfer, also insert into account_audit_logs for destination account
+        -- 3. If Transfer, also insert into account_audit_logs for destination account
         IF v_type_name = 'Transfer' AND NEW.destination_account_id IS NOT NULL THEN
             INSERT INTO public.account_audit_logs (
                 account_id,
@@ -158,9 +160,29 @@ BEGIN
         END IF;
 
     ELSIF TG_OP = 'UPDATE' THEN
+        v_actor := COALESCE(auth.uid(), NEW.updated_by, OLD.updated_by, NEW.created_by, OLD.created_by);
+
+        -- Retrieve transaction type name
+        SELECT type_name INTO v_type_name
+        FROM public.transaction_types
+        WHERE transaction_type_id = OLD.transaction_type_id;
+
+        -- Retrieve source account name
+        SELECT account_name INTO v_source_account_name
+        FROM public.accounts
+        WHERE account_id = OLD.account_id;
+
+        -- Retrieve destination account name if applicable
+        IF OLD.destination_account_id IS NOT NULL THEN
+            SELECT account_name INTO v_dest_account_name
+            FROM public.accounts
+            WHERE account_id = OLD.destination_account_id;
+        END IF;
+
         -- Check for soft-deletion (status changing from 'Y' to 'N')
         IF OLD.status = 'Y' AND NEW.status = 'N' THEN
-            v_action := 'DELETE';
+            v_action := 'DELETED';
+
             IF v_type_name = 'Transfer' THEN
                 v_action_desc := FORMAT('Deleted Transfer transaction of ₱%s from %s to %s.',
                                         OLD.amount::text,
@@ -181,7 +203,7 @@ BEGIN
                                         COALESCE(v_source_account_name, 'Account'));
             END IF;
 
-            -- Insert into transaction_audit_logs
+            -- Insert into transaction_audit_logs with action = 'DELETED'
             INSERT INTO public.transaction_audit_logs (
                 transaction_id,
                 action,
@@ -211,7 +233,7 @@ BEGIN
                 performed_at
             ) VALUES (
                 OLD.account_id,
-                'DELETE',
+                'DELETED',
                 v_action_desc,
                 to_jsonb(OLD),
                 to_jsonb(NEW),
@@ -231,7 +253,7 @@ BEGIN
                     performed_at
                 ) VALUES (
                     OLD.destination_account_id,
-                    'DELETE',
+                    'DELETED',
                     v_action_desc,
                     to_jsonb(OLD),
                     to_jsonb(NEW),
@@ -242,7 +264,7 @@ BEGIN
 
         ELSE
             -- Normal edit / update
-            v_action := 'UPDATE';
+            v_action := 'UPDATED';
             v_action_desc := FORMAT('Updated %s transaction from ₱%s to ₱%s on %s account.',
                                     COALESCE(v_type_name, 'Unknown'),
                                     OLD.amount::text,
@@ -277,7 +299,7 @@ BEGIN
                 performed_at
             ) VALUES (
                 NEW.account_id,
-                'UPDATE',
+                'UPDATED',
                 v_action_desc,
                 to_jsonb(OLD),
                 to_jsonb(NEW),
@@ -285,6 +307,87 @@ BEGIN
                 NOW()
             );
         END IF;
+    END IF;
+
+    RETURN NEW;
+END;
+$$;
+
+-- 3. Enhanced Trigger Function: process_account_audit_log
+CREATE OR REPLACE FUNCTION public.process_account_audit_log()
+RETURNS TRIGGER
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public, auth, pg_temp
+AS $$
+DECLARE
+    v_action VARCHAR(50);
+    v_action_desc VARCHAR(500);
+    v_actor UUID;
+BEGIN
+    IF TG_OP = 'INSERT' THEN
+        v_actor := COALESCE(auth.uid(), NEW.created_by);
+        v_action := 'CREATED';
+        v_action_desc := FORMAT('Account "%s" created with initial balance ₱%s',
+                                NEW.account_name,
+                                NEW.initial_balance::text);
+
+        INSERT INTO public.account_audit_logs (
+            account_id,
+            action,
+            action_description,
+            old_values,
+            new_values,
+            performed_by,
+            performed_at
+        ) VALUES (
+            NEW.account_id,
+            v_action,
+            v_action_desc,
+            NULL,
+            to_jsonb(NEW),
+            v_actor,
+            NOW()
+        );
+
+    ELSIF TG_OP = 'UPDATE' THEN
+        v_actor := COALESCE(auth.uid(), NEW.updated_by, OLD.updated_by, NEW.created_by, OLD.created_by);
+
+        IF OLD.status = 'ACTIVE' AND NEW.status = 'INACTIVE' THEN
+            v_action := 'DEACTIVATED';
+            v_action_desc := FORMAT('Account "%s" deactivated with zero balance', NEW.account_name);
+        ELSIF OLD.status = 'INACTIVE' AND NEW.status = 'ACTIVE' THEN
+            v_action := 'REACTIVATED';
+            v_action_desc := FORMAT('Account "%s" reactivated to ACTIVE status', NEW.account_name);
+        ELSE
+            v_action := 'UPDATED';
+            IF OLD.initial_balance <> NEW.initial_balance THEN
+                v_action_desc := FORMAT('Account "%s" initial balance updated from ₱%s to ₱%s',
+                                        NEW.account_name,
+                                        OLD.initial_balance::text,
+                                        NEW.initial_balance::text);
+            ELSE
+                v_action_desc := FORMAT('Account "%s" details updated', NEW.account_name);
+            END IF;
+        END IF;
+
+        INSERT INTO public.account_audit_logs (
+            account_id,
+            action,
+            action_description,
+            old_values,
+            new_values,
+            performed_by,
+            performed_at
+        ) VALUES (
+            NEW.account_id,
+            v_action,
+            v_action_desc,
+            to_jsonb(OLD),
+            to_jsonb(NEW),
+            v_actor,
+            NOW()
+        );
     END IF;
 
     RETURN NEW;

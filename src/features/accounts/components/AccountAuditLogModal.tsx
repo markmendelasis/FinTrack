@@ -35,6 +35,7 @@ export function AccountAuditLogModal({ account, isOpen, onClose }: AccountAuditL
 
   const getActionBadgeColor = (action: string) => {
     switch (action) {
+      case 'CREATED':
       case 'INSERT':
         return 'bg-emerald-100 text-emerald-800 border-emerald-200';
       case 'INCOME':
@@ -43,12 +44,16 @@ export function AccountAuditLogModal({ account, isOpen, onClose }: AccountAuditL
         return 'bg-rose-100 text-rose-800 border-rose-200';
       case 'TRANSFER':
         return 'bg-amber-100 text-amber-800 border-amber-200';
+      case 'DELETED':
       case 'DELETE':
         return 'bg-rose-100 text-rose-800 border-rose-200';
+      case 'DEACTIVATED':
       case 'DEACTIVATE':
         return 'bg-amber-100 text-amber-800 border-amber-200';
+      case 'REACTIVATED':
       case 'REACTIVATE':
         return 'bg-teal-100 text-teal-800 border-teal-200';
+      case 'UPDATED':
       case 'UPDATE':
       default:
         return 'bg-slate-100 text-slate-700 border-slate-200';
@@ -126,7 +131,7 @@ export function AccountAuditLogModal({ account, isOpen, onClose }: AccountAuditL
                   </span>
                   <span className="inline-flex items-center gap-1 text-emerald-700 font-medium">
                     <ShieldCheck className="h-3 w-3" />
-                    Verified Trigger
+                    System Verified
                   </span>
                 </div>
               </div>
@@ -136,7 +141,7 @@ export function AccountAuditLogModal({ account, isOpen, onClose }: AccountAuditL
 
         <div className="pt-4 border-t border-slate-100 flex items-center justify-between shrink-0">
           <p className="text-[11px] text-slate-400">
-            Recorded automatically by PostgreSQL database triggers.
+            All account changes and related transactions are automatically recorded.
           </p>
           <Button variant="outline" size="sm" onClick={onClose}>
             Close

@@ -238,7 +238,7 @@ export interface Database {
         Row: {
           audit_log_id: string;
           account_id: string;
-          action: 'INSERT' | 'UPDATE' | 'DEACTIVATE' | 'REACTIVATE' | 'INCOME' | 'EXPENSE' | 'TRANSFER' | 'DELETE' | string;
+          action: 'CREATED' | 'UPDATED' | 'DEACTIVATED' | 'REACTIVATED' | 'INCOME' | 'EXPENSE' | 'TRANSFER' | 'DELETED' | 'INSERT' | 'UPDATE' | 'DEACTIVATE' | 'REACTIVATE' | 'DELETE' | string;
           action_description: string;
           old_values: Json | null;
           new_values: Json | null;
@@ -248,7 +248,7 @@ export interface Database {
         Insert: {
           audit_log_id?: string;
           account_id: string;
-          action: 'INSERT' | 'UPDATE' | 'DEACTIVATE' | 'REACTIVATE' | 'INCOME' | 'EXPENSE' | 'TRANSFER' | 'DELETE' | string;
+          action: 'CREATED' | 'UPDATED' | 'DEACTIVATED' | 'REACTIVATED' | 'INCOME' | 'EXPENSE' | 'TRANSFER' | 'DELETED' | 'INSERT' | 'UPDATE' | 'DEACTIVATE' | 'REACTIVATE' | 'DELETE' | string;
           action_description: string;
           old_values?: Json | null;
           new_values?: Json | null;
@@ -258,7 +258,7 @@ export interface Database {
         Update: {
           audit_log_id?: string;
           account_id?: string;
-          action?: 'INSERT' | 'UPDATE' | 'DEACTIVATE' | 'REACTIVATE' | 'INCOME' | 'EXPENSE' | 'TRANSFER' | 'DELETE' | string;
+          action?: 'CREATED' | 'UPDATED' | 'DEACTIVATED' | 'REACTIVATED' | 'INCOME' | 'EXPENSE' | 'TRANSFER' | 'DELETED' | 'INSERT' | 'UPDATE' | 'DEACTIVATE' | 'REACTIVATE' | 'DELETE' | string;
           action_description?: string;
           old_values?: Json | null;
           new_values?: Json | null;
