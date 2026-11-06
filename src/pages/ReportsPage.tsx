@@ -1,44 +1,121 @@
-import { Card } from '@/components/ui/Card';
-import { FileText, Download, Info } from 'lucide-react';
-import { Button } from '@/components/ui/Button';
+import { useAuth } from '@/features/auth/hooks/useAuth';
+import { useAccounts } from '@/features/accounts/hooks/useAccounts';
+import { useTransactions } from '@/features/transactions/hooks/useTransactions';
+import { useReports } from '@/features/reports/hooks/useReports';
+import { ReportFilters } from '@/features/reports/components/ReportFilters';
+import { ReportSummaryCards } from '@/features/reports/components/ReportSummaryCards';
+import { CategoryReportTable } from '@/features/reports/components/CategoryReportTable';
+import { AccountActivityTable } from '@/features/reports/components/AccountActivityTable';
+import { ReportTransactionTable } from '@/features/reports/components/ReportTransactionTable';
+import { PrintableReportView } from '@/features/reports/components/PrintableReportView';
+import { formatDate } from '@/lib/utils/formatters';
+import { FileText, ShieldCheck } from 'lucide-react';
 
 export function ReportsPage() {
+  const { user, profile } = useAuth();
+  const { accounts } = useAccounts();
+  const { transactionTypes } = useTransactions();
+  const {
+    filters,
+    reportData,
+    isLoading,
+    setPreset,
+    setCustomDateRange,
+    setAccountId,
+    setTransactionTypeId,
+    handleExportCSV,
+    handlePrint,
+  } = useReports();
+
+  const displayName = profile?.user_name || user?.user_metadata?.user_name || 'FinTrack User';
+
   return (
     <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div>
-          <h2 className="text-xl font-bold text-slate-900">Financial Reports</h2>
-          <p className="text-xs sm:text-sm text-slate-500">
-            Export and analyze income, expense, and transfer fee summaries.
-          </p>
-        </div>
-        <Button variant="outline" size="md" disabled>
-          <Download className="h-4 w-4 mr-1.5" />
-          Export PDF
-        </Button>
-      </div>
+      {/* Printable Statement for PDF Generation */}
+      {reportData && (
+        <PrintableReportView
+          report={reportData}
+          filters={filters}
+          userName={displayName}
+        />
+      )}
 
-      <div className="rounded-xl border border-blue-200 bg-blue-50 p-4 text-xs sm:text-sm text-blue-900 flex items-start gap-3">
-        <Info className="h-5 w-5 text-blue-600 shrink-0 mt-0.5" />
-        <div>
-          <p className="font-semibold">Milestone 8 Scope</p>
-          <p className="text-blue-700 mt-0.5">
-            Detailed reports, date filtering, category breakdowns, and client-side PDF export will be finalized in Milestone 8 after transaction features are operational.
-          </p>
-        </div>
-      </div>
-
-      <Card>
-        <div className="py-12 text-center">
-          <div className="inline-flex h-12 w-12 items-center justify-center rounded-full bg-slate-100 text-slate-400 mb-3">
-            <FileText className="h-6 w-6" />
+      {/* Screen View */}
+      <div className="no-print space-y-6">
+        {/* Page Header */}
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div>
+            <div className="flex items-center gap-2">
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-2.5 py-0.5 text-xs font-semibold text-emerald-800 border border-emerald-200">
+                <ShieldCheck className="h-3.5 w-3.5 text-emerald-600" />
+                Live Financial Data
+              </span>
+              <span className="text-xs text-slate-400">
+                {formatDate(filters.startDate)} — {formatDate(filters.endDate)}
+              </span>
+            </div>
+            <h2 className="mt-1 text-xl sm:text-2xl font-bold tracking-tight text-slate-900">
+              Financial Reports & Analysis
+            </h2>
+            <p className="mt-0.5 text-xs sm:text-sm text-slate-500">
+              Generate income and expense summaries, account activity reports, and export to CSV or PDF.
+            </p>
           </div>
-          <h3 className="text-base font-semibold text-slate-800">Reports Module Ready for Data</h3>
-          <p className="text-xs text-slate-500 max-w-sm mx-auto mt-1">
-            Historical transaction summaries, monthly aggregates, and PDF downloads will be generated here.
-          </p>
         </div>
-      </Card>
+
+        {/* Filter Controls Bar */}
+        <ReportFilters
+          filters={filters}
+          accounts={accounts}
+          transactionTypes={transactionTypes}
+          onPresetChange={setPreset}
+          onCustomDateChange={setCustomDateRange}
+          onAccountChange={setAccountId}
+          onTypeChange={setTransactionTypeId}
+          onExportCSV={handleExportCSV}
+          onPrint={handlePrint}
+        />
+
+        {/* Summary Cards */}
+        {reportData && (
+          <ReportSummaryCards summary={reportData.summary} isLoading={isLoading} />
+        )}
+
+        {/* Category Breakdown Table */}
+        {reportData && (
+          <CategoryReportTable
+            categories={reportData.categoryBreakdown}
+            isLoading={isLoading}
+          />
+        )}
+
+        {/* Account Flow & Activity Table */}
+        {reportData && (
+          <AccountActivityTable
+            activity={reportData.accountActivity}
+            isLoading={isLoading}
+          />
+        )}
+
+        {/* Itemized Transactions Table */}
+        {reportData && (
+          <ReportTransactionTable
+            transactions={reportData.transactions}
+            isLoading={isLoading}
+          />
+        )}
+
+        {/* Empty / Initial State if no report data yet */}
+        {!reportData && !isLoading && (
+          <div className="py-16 text-center text-slate-400">
+            <FileText className="h-10 w-10 text-slate-300 mx-auto mb-3" />
+            <p className="text-sm font-semibold text-slate-700">No report data generated</p>
+            <p className="text-xs text-slate-400 mt-1">
+              Select a date range above to load financial reporting figures.
+            </p>
+          </div>
+        )}
+      </div>
     </div>
   );
-};
+}
