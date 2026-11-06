@@ -1,15 +1,52 @@
+import { useState, useEffect } from 'react';
 import { Card } from '@/components/ui/Card';
 import { formatCurrency } from '@/lib/utils/formatters';
 import { Wallet, TrendingUp, TrendingDown, ArrowLeftRight, ShieldCheck, CheckCircle2 } from 'lucide-react';
 import { useAccounts } from '@/features/accounts/hooks/useAccounts';
 import { useAuth } from '@/features/auth/hooks/useAuth';
+import { supabase } from '@/lib/supabase/client';
 
 export function DashboardPage() {
   const { user, profile } = useAuth();
-  const { activeAccounts, isLoading } = useAccounts();
+  const { activeAccounts } = useAccounts();
+  const [summary, setSummary] = useState({
+    total_balance: 0,
+    total_income: 0,
+    total_expense: 0,
+    total_transfer_fees: 0,
+  });
+  const [isSummaryLoading, setIsSummaryLoading] = useState(true);
 
-  const totalBalance = activeAccounts.reduce((sum, acc) => sum + acc.calculated_balance, 0);
   const displayName = profile?.user_name || user?.user_metadata?.user_name || 'FinTrack User';
+
+  useEffect(() => {
+    let isMounted = true;
+    async function fetchSummary() {
+      setIsSummaryLoading(true);
+      try {
+        const { data, error } = await supabase.rpc('get_dashboard_summary');
+        if (!error && data && isMounted) {
+          setSummary({
+            total_balance: Number(data.total_balance || 0),
+            total_income: Number(data.total_income || 0),
+            total_expense: Number(data.total_expense || 0),
+            total_transfer_fees: Number(data.total_transfer_fees || 0),
+          });
+        }
+      } catch (err) {
+        console.warn('[FinTrack] Could not load dashboard summary RPC:', err);
+      } finally {
+        if (isMounted) {
+          setIsSummaryLoading(false);
+        }
+      }
+    }
+
+    fetchSummary();
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   return (
     <div className="space-y-6">
@@ -44,7 +81,7 @@ export function DashboardPage() {
             </div>
           </div>
           <p className="mt-2 text-2xl font-bold text-slate-900">
-            {isLoading ? '...' : formatCurrency(totalBalance)}
+            {isSummaryLoading ? '...' : formatCurrency(summary.total_balance)}
           </p>
           <p className="mt-1 text-xs text-slate-500">
             Sum of {activeAccounts.length} active account{activeAccounts.length === 1 ? '' : 's'}
@@ -62,7 +99,7 @@ export function DashboardPage() {
             </div>
           </div>
           <p className="mt-2 text-2xl font-bold text-slate-900">
-            {formatCurrency(0.00)}
+            {isSummaryLoading ? '...' : formatCurrency(summary.total_income)}
           </p>
           <p className="mt-1 text-xs text-slate-500">
             Active, non-deleted income
@@ -80,7 +117,7 @@ export function DashboardPage() {
             </div>
           </div>
           <p className="mt-2 text-2xl font-bold text-slate-900">
-            {formatCurrency(0.00)}
+            {isSummaryLoading ? '...' : formatCurrency(summary.total_expense)}
           </p>
           <p className="mt-1 text-xs text-slate-500">
             Excludes transfer fees
@@ -98,7 +135,7 @@ export function DashboardPage() {
             </div>
           </div>
           <p className="mt-2 text-2xl font-bold text-slate-900">
-            {formatCurrency(0.00)}
+            {isSummaryLoading ? '...' : formatCurrency(summary.total_transfer_fees)}
           </p>
           <p className="mt-1 text-xs text-slate-500">
             Reported separately
@@ -107,15 +144,15 @@ export function DashboardPage() {
       </div>
 
       {/* Architecture & Milestone Status Card */}
-      <Card title="Architecture & Milestone Status" subtitle="Milestones 1–4 Verification">
+      <Card title="Architecture & Milestone Status" subtitle="Milestones 1–5 Verification">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
           <div className="space-y-3">
             <div className="flex items-start gap-2.5">
               <CheckCircle2 className="h-5 w-5 text-emerald-600 shrink-0 mt-0.5" />
               <div>
-                <p className="font-semibold text-slate-800">Financial Accounts Management Active</p>
+                <p className="font-semibold text-slate-800">Transaction Management Active</p>
                 <p className="text-xs text-slate-500">
-                  Multiple accounts, dynamic balance calculation, zero-balance deactivation checks, and initial balance locking.
+                  Income, Expense, and atomic Transfers with database-side balance validation.
                 </p>
               </div>
             </div>
@@ -125,7 +162,7 @@ export function DashboardPage() {
               <div>
                 <p className="font-semibold text-slate-800">PostgreSQL RPC Financial Operations</p>
                 <p className="text-xs text-slate-500">
-                  Authoritative database-level validations prevent overspending and race conditions.
+                  Reversals, edits, soft-deletions, and transfer fees enforced in PostgreSQL.
                 </p>
               </div>
             </div>
@@ -133,9 +170,9 @@ export function DashboardPage() {
             <div className="flex items-start gap-2.5">
               <CheckCircle2 className="h-5 w-5 text-emerald-600 shrink-0 mt-0.5" />
               <div>
-                <p className="font-semibold text-slate-800">Supabase Auth & Session Protection</p>
+                <p className="font-semibold text-slate-800">Financial Accounts Management</p>
                 <p className="text-xs text-slate-500">
-                  Session persistence, email/password, Google OAuth, and protected routing.
+                  Multiple accounts, zero-balance deactivation checks, and initial balance locking.
                 </p>
               </div>
             </div>
@@ -147,7 +184,7 @@ export function DashboardPage() {
               <div>
                 <p className="font-semibold text-slate-800">Automatic Audit Trail Logging</p>
                 <p className="text-xs text-slate-500">
-                  Account changes, deactivations, and initial balance updates are audited via PostgreSQL triggers.
+                  Transaction changes, soft-deletions, and account updates audited via triggers.
                 </p>
               </div>
             </div>
@@ -165,9 +202,9 @@ export function DashboardPage() {
             <div className="flex items-start gap-2.5">
               <CheckCircle2 className="h-5 w-5 text-emerald-600 shrink-0 mt-0.5" />
               <div>
-                <p className="font-semibold text-slate-800">Git Safeguards Active</p>
+                <p className="font-semibold text-slate-800">Supabase Auth & RLS Enforcement</p>
                 <p className="text-xs text-slate-500">
-                  Clean branch <code className="bg-slate-100 px-1 py-0.5 rounded text-[11px]">develop</code> with environment files gitignored.
+                  User ownership enforced on all tables by Row Level Security policies.
                 </p>
               </div>
             </div>
