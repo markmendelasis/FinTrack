@@ -7,9 +7,7 @@ import { useDashboardData } from '@/features/dashboard/hooks/useDashboardData';
 import { useTransactions } from '@/features/transactions/hooks/useTransactions';
 import { accountService } from '@/features/accounts/services/accountService';
 import { DashboardSummaryCards } from '@/features/dashboard/components/DashboardSummaryCards';
-import { IncomeExpenseChart } from '@/features/dashboard/components/IncomeExpenseChart';
 import { ExpenseCategoryChart } from '@/features/dashboard/components/ExpenseCategoryChart';
-import { AccountDistributionChart } from '@/features/dashboard/components/AccountDistributionChart';
 import { RecentTransactionsWidget } from '@/features/dashboard/components/RecentTransactionsWidget';
 import { QuickActionsWidget } from '@/features/dashboard/components/QuickActionsWidget';
 import { CreateTransactionModal } from '@/features/transactions/components/CreateTransactionModal';
@@ -25,9 +23,7 @@ export function DashboardPage() {
   const { user, profile } = useAuth();
   const {
     summary,
-    monthlyCashFlow,
     categoryBreakdown,
-    accountShares,
     recentTransactions,
     accounts,
     isLoading,
@@ -138,19 +134,9 @@ export function DashboardPage() {
         isLoading={isLoading}
       />
 
-      {/* Primary Analytics Charts Row */}
+      {/* Analytics & Activity Row */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <IncomeExpenseChart data={monthlyCashFlow} isLoading={isLoading} />
         <ExpenseCategoryChart data={categoryBreakdown} isLoading={isLoading} />
-      </div>
-
-      {/* Secondary Analytics Row: Account Allocation & Recent Transactions */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <AccountDistributionChart
-          shares={accountShares}
-          accounts={accounts}
-          isLoading={isLoading}
-        />
         <RecentTransactionsWidget
           transactions={recentTransactions}
           isLoading={isLoading}
