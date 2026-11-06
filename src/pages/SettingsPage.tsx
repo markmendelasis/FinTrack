@@ -1,8 +1,61 @@
+import { useState, useEffect } from 'react';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
-import { User, ShieldAlert, KeyRound, Info } from 'lucide-react';
+import { User, ShieldAlert, KeyRound, Check, Edit2 } from 'lucide-react';
+import { useAuth } from '@/features/auth/hooks/useAuth';
+import { authService } from '@/features/auth/services/authService';
+import toast from 'react-hot-toast';
 
 export function SettingsPage() {
+  const { user, profile, refreshProfile, resetPassword } = useAuth();
+  const [userName, setUserName] = useState('');
+  const [isEditingName, setIsEditingName] = useState(false);
+  const [isSavingName, setIsSavingName] = useState(false);
+  const [isSendingReset, setIsSendingReset] = useState(false);
+
+  useEffect(() => {
+    if (profile?.user_name) {
+      setUserName(profile.user_name);
+    } else if (user?.user_metadata?.user_name) {
+      setUserName(user.user_metadata.user_name);
+    }
+  }, [profile, user]);
+
+  const handleSaveName = async () => {
+    if (!user) return;
+    const trimmed = userName.trim();
+    if (!trimmed) {
+      toast.error('Display name cannot be empty');
+      return;
+    }
+
+    setIsSavingName(true);
+    try {
+      await authService.updateUserName(user.id, trimmed);
+      await refreshProfile();
+      setIsEditingName(false);
+      toast.success('Display name updated successfully');
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Failed to update name';
+      toast.error(message);
+    } finally {
+      setIsSavingName(false);
+    }
+  };
+
+  const handleResetPassword = async () => {
+    if (!user?.email) return;
+
+    setIsSendingReset(true);
+    try {
+      await resetPassword(user.email);
+    } catch {
+      // Toast notification is managed by AuthContext
+    } finally {
+      setIsSendingReset(false);
+    }
+  };
+
   return (
     <div className="space-y-6 max-w-4xl">
       <div>
@@ -10,16 +63,6 @@ export function SettingsPage() {
         <p className="text-xs sm:text-sm text-slate-500">
           Manage your account profile, preferences, and security.
         </p>
-      </div>
-
-      <div className="rounded-xl border border-blue-200 bg-blue-50 p-4 text-xs sm:text-sm text-blue-900 flex items-start gap-3">
-        <Info className="h-5 w-5 text-blue-600 shrink-0 mt-0.5" />
-        <div>
-          <p className="font-semibold">Milestone 3 & Security Integration</p>
-          <p className="text-blue-700 mt-0.5">
-            User profile editing, password changes, and permanent account deletion via server-side process will be fully active upon Milestone 3 implementation.
-          </p>
-        </div>
       </div>
 
       {/* User Profile Card */}
@@ -34,17 +77,63 @@ export function SettingsPage() {
                 <User className="absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
                 <input
                   type="text"
-                  disabled
-                  defaultValue="FinTrack User"
-                  className="w-full pl-9 pr-3 py-2 text-sm bg-slate-50 border border-slate-300 rounded-lg text-slate-700 cursor-not-allowed"
+                  disabled={!isEditingName || isSavingName}
+                  value={userName}
+                  onChange={(e) => setUserName(e.target.value)}
+                  className={`w-full pl-9 pr-3 py-2 text-sm rounded-lg border transition-colors ${
+                    isEditingName
+                      ? 'bg-white border-slate-300 text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-500'
+                      : 'bg-slate-50 border-slate-200 text-slate-700 cursor-not-allowed'
+                  }`}
                 />
               </div>
-              <Button variant="outline" size="md" disabled>
-                Edit
-              </Button>
+              {isEditingName ? (
+                <div className="flex items-center gap-1.5">
+                  <Button
+                    variant="primary"
+                    size="md"
+                    onClick={handleSaveName}
+                    isLoading={isSavingName}
+                  >
+                    <Check className="h-4 w-4 mr-1" />
+                    Save
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="md"
+                    disabled={isSavingName}
+                    onClick={() => {
+                      setIsEditingName(false);
+                      setUserName(profile?.user_name || '');
+                    }}
+                  >
+                    Cancel
+                  </Button>
+                </div>
+              ) : (
+                <Button variant="outline" size="md" onClick={() => setIsEditingName(true)}>
+                  <Edit2 className="h-4 w-4 mr-1.5" />
+                  Edit
+                </Button>
+              )}
             </div>
             <p className="text-xs text-slate-500 mt-1">
-              Editable display name mapped to <code className="bg-slate-100 px-1 py-0.5 rounded text-[11px]">user_profiles.user_name</code>.
+              Display name mapped to <code className="bg-slate-100 px-1 py-0.5 rounded text-[11px]">user_profiles.user_name</code>.
+            </p>
+          </div>
+
+          <div>
+            <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">
+              Email Address
+            </label>
+            <input
+              type="email"
+              disabled
+              value={user?.email || ''}
+              className="w-full max-w-md px-3 py-2 text-sm bg-slate-50 border border-slate-200 rounded-lg text-slate-600 cursor-not-allowed"
+            />
+            <p className="text-xs text-slate-500 mt-1">
+              Managed securely through Supabase Auth (<code className="bg-slate-100 px-1 py-0.5 rounded text-[11px]">auth.users</code>).
             </p>
           </div>
         </div>
@@ -52,16 +141,21 @@ export function SettingsPage() {
 
       {/* Security Credentials Card */}
       <Card title="Authentication & Password" subtitle="Manage your Supabase Auth credentials">
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
             <p className="text-sm font-semibold text-slate-800">Password Recovery & Reset</p>
-            <p className="text-xs text-slate-500">
-              Handled securely by Supabase Auth; passwords are never stored in application tables.
+            <p className="text-xs text-slate-500 mt-0.5">
+              Send a secure password recovery link to your registered email address.
             </p>
           </div>
-          <Button variant="outline" size="sm" disabled>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleResetPassword}
+            isLoading={isSendingReset}
+          >
             <KeyRound className="h-4 w-4 mr-1.5" />
-            Reset Password
+            Send Password Reset Email
           </Button>
         </div>
       </Card>
@@ -91,4 +185,4 @@ export function SettingsPage() {
       </Card>
     </div>
   );
-};
+}

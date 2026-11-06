@@ -40,6 +40,7 @@ export interface Database {
           updated_at?: string | null;
           updated_by?: string | null;
         };
+        Relationships: [];
       };
       accounts: {
         Row: {
@@ -75,6 +76,7 @@ export interface Database {
           updated_at?: string | null;
           updated_by?: string | null;
         };
+        Relationships: [];
       };
       transaction_types: {
         Row: {
@@ -107,6 +109,7 @@ export interface Database {
           updated_at?: string | null;
           updated_by?: string | null;
         };
+        Relationships: [];
       };
       categories: {
         Row: {
@@ -142,6 +145,7 @@ export interface Database {
           updated_at?: string | null;
           updated_by?: string | null;
         };
+        Relationships: [];
       };
       transactions: {
         Row: {
@@ -195,6 +199,7 @@ export interface Database {
           updated_at?: string | null;
           updated_by?: string | null;
         };
+        Relationships: [];
       };
       transaction_audit_logs: {
         Row: {
@@ -227,6 +232,7 @@ export interface Database {
           performed_by?: string;
           performed_at?: string;
         };
+        Relationships: [];
       };
       account_audit_logs: {
         Row: {
@@ -259,6 +265,7 @@ export interface Database {
           performed_by?: string;
           performed_at?: string;
         };
+        Relationships: [];
       };
       user_profile_audit_logs: {
         Row: {
@@ -291,6 +298,7 @@ export interface Database {
           performed_by?: string;
           performed_at?: string;
         };
+        Relationships: [];
       };
     };
     Views: Record<string, never>;
@@ -366,7 +374,7 @@ export interface Database {
         Returns: void;
       };
       get_dashboard_summary: {
-        Args: Record<string, never>;
+        Args: Record<PropertyKey, never>;
         Returns: {
           total_balance: number;
           total_income: number;
