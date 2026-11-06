@@ -19,7 +19,7 @@ export const reportService = {
         *,
         accounts!fk_trans_source_account_owner (account_name),
         dest_account:accounts!fk_trans_dest_account_owner (account_name),
-        categories (category_name),
+        categories!fk_trans_category_type (category_name),
         transaction_types (type_name)
       `)
       .eq('status', 'Y')

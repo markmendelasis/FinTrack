@@ -153,7 +153,7 @@ export const dashboardService = {
       .from('transactions')
       .select(`
         amount,
-        categories (category_name),
+        categories!fk_trans_category_type (category_name),
         transaction_types!inner (type_name)
       `)
       .eq('status', 'Y')
