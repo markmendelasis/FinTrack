@@ -1,10 +1,9 @@
-import React from 'react';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Wallet, Plus, Info } from 'lucide-react';
 import { formatCurrency } from '@/lib/utils/formatters';
 
-export const AccountsPage: React.FC = () => {
+export function AccountsPage() {
   return (
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">

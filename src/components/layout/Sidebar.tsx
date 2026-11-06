@@ -1,4 +1,4 @@
-import React from 'react';
+import type { ComponentType } from 'react';
 import { NavLink } from 'react-router-dom';
 import {
   LayoutDashboard,
@@ -20,7 +20,7 @@ interface SidebarProps {
 interface NavItem {
   name: string;
   to: string;
-  icon: React.ComponentType<{ className?: string }>;
+  icon: ComponentType<{ className?: string }>;
   badge?: string;
   badgeColor?: string;
 }
@@ -35,7 +35,7 @@ const mainNavItems: NavItem[] = [
   { name: 'Settings', to: '/settings', icon: Settings },
 ];
 
-export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
+export function Sidebar({ isOpen, onClose }: SidebarProps) {
   return (
     <>
       {/* Mobile backdrop */}

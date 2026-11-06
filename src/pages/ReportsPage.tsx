@@ -1,9 +1,8 @@
-import React from 'react';
 import { Card } from '@/components/ui/Card';
 import { FileText, Download, Info } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 
-export const ReportsPage: React.FC = () => {
+export function ReportsPage() {
   return (
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">

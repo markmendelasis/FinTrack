@@ -1,9 +1,8 @@
-import React from 'react';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { User, ShieldAlert, KeyRound, Info } from 'lucide-react';
 
-export const SettingsPage: React.FC = () => {
+export function SettingsPage() {
   return (
     <div className="space-y-6 max-w-4xl">
       <div>

@@ -1,11 +1,11 @@
-import React from 'react';
+import type { FormEvent } from 'react';
 import { Link } from 'react-router-dom';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Mail, Lock, ShieldCheck } from 'lucide-react';
 
-export const LoginPage: React.FC = () => {
-  const handleSubmit = (e: React.FormEvent) => {
+export function LoginPage() {
+  const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
   };
 

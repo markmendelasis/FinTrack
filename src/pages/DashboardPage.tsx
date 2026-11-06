@@ -1,9 +1,8 @@
-import React from 'react';
 import { Card } from '@/components/ui/Card';
 import { formatCurrency } from '@/lib/utils/formatters';
 import { Wallet, TrendingUp, TrendingDown, ArrowLeftRight, ShieldCheck, CheckCircle2 } from 'lucide-react';
 
-export const DashboardPage: React.FC = () => {
+export function DashboardPage() {
   return (
     <div className="space-y-6">
       {/* Welcome Banner */}

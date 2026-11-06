@@ -1,8 +1,7 @@
-import React from 'react';
 import { Toaster } from 'react-hot-toast';
 import { AppRouter } from '@/routes/AppRouter';
 
-export const App: React.FC = () => {
+export function App() {
   return (
     <>
       <Toaster

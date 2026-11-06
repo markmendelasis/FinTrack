@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
 import { Sidebar } from './Sidebar';
 import { Header } from './Header';
@@ -14,7 +14,7 @@ const routeTitles: Record<string, string> = {
   '/settings': 'Settings',
 };
 
-export const AppLayout: React.FC = () => {
+export function AppLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const location = useLocation();
 

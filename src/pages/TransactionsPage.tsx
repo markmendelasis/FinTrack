@@ -1,9 +1,8 @@
-import React from 'react';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { ArrowLeftRight, Plus, Info } from 'lucide-react';
 
-export const TransactionsPage: React.FC = () => {
+export function TransactionsPage() {
   return (
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">

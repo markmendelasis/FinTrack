@@ -1,20 +1,20 @@
-import React from 'react';
+import type { ReactNode } from 'react';
 
 interface CardProps {
-  children: React.ReactNode;
+  children: ReactNode;
   className?: string;
   title?: string;
   subtitle?: string;
-  action?: React.ReactNode;
+  action?: ReactNode;
 }
 
-export const Card: React.FC<CardProps> = ({
+export function Card({
   children,
   className = '',
   title,
   subtitle,
   action,
-}) => {
+}: CardProps) {
   return (
     <div
       className={`bg-white rounded-xl border border-slate-200/80 shadow-xs overflow-hidden ${className}`}

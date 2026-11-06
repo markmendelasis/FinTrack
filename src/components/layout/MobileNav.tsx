@@ -1,8 +1,7 @@
-import React from 'react';
 import { NavLink } from 'react-router-dom';
 import { LayoutDashboard, Wallet, ArrowLeftRight, FileText, Settings } from 'lucide-react';
 
-export const MobileNav: React.FC = () => {
+export function MobileNav() {
   const navItems = [
     { name: 'Dashboard', to: '/dashboard', icon: LayoutDashboard },
     { name: 'Accounts', to: '/accounts', icon: Wallet },

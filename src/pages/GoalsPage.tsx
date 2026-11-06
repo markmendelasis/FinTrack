@@ -1,8 +1,7 @@
-import React from 'react';
 import { Card } from '@/components/ui/Card';
 import { Target, Clock } from 'lucide-react';
 
-export const GoalsPage: React.FC = () => {
+export function GoalsPage() {
   return (
     <div className="space-y-6">
       <div>

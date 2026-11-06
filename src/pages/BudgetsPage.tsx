@@ -1,8 +1,7 @@
-import React from 'react';
 import { Card } from '@/components/ui/Card';
 import { PieChart, Clock } from 'lucide-react';
 
-export const BudgetsPage: React.FC = () => {
+export function BudgetsPage() {
   return (
     <div className="space-y-6">
       <div>
