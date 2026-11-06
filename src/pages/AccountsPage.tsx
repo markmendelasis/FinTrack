@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
-import { Plus, Wallet, ShieldCheck } from 'lucide-react';
+import { Plus, Wallet } from 'lucide-react';
 import { useAccounts } from '@/features/accounts/hooks/useAccounts';
 import { AccountCard } from '@/features/accounts/components/AccountCard';
 import { CreateAccountModal } from '@/features/accounts/components/CreateAccountModal';
@@ -51,17 +51,6 @@ export function AccountsPage() {
         </Button>
       </div>
 
-      {/* Rules Notice */}
-      <div className="rounded-xl border border-emerald-200/80 bg-emerald-50/70 p-4 text-xs text-emerald-900 flex items-start gap-3">
-        <ShieldCheck className="h-5 w-5 text-emerald-700 shrink-0 mt-0.5" />
-        <div className="space-y-1">
-          <p className="font-semibold text-emerald-950">Financial Account Rules Active (Section 7.1)</p>
-          <p className="text-emerald-800 leading-relaxed">
-            Every user must retain at least one active account. Initial balances can be edited only before transaction history exists. Accounts can only be deactivated when their calculated balance is exactly ₱0.00.
-          </p>
-        </div>
-      </div>
-
       {/* Filter tabs */}
       {allAccounts.length > 0 && (
         <div className="flex items-center justify-between">
@@ -80,7 +69,7 @@ export function AccountsPage() {
             <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
             <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
           </svg>
-          Loading accounts and calculating dynamic balances...
+          Loading accounts...
         </div>
       ) : accounts.length === 0 ? (
         <Card>

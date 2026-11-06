@@ -136,7 +136,7 @@ export function TransactionCard({
                 type="button"
                 onClick={() => onDelete(transaction)}
                 className="rounded-lg p-1.5 text-slate-400 hover:bg-rose-50 hover:text-rose-600 transition-colors"
-                title="Delete transaction and reverse balance"
+                title="Delete transaction"
                 aria-label="Delete transaction"
               >
                 <Trash2 className="h-4 w-4" />

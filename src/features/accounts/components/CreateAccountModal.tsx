@@ -96,7 +96,7 @@ export function CreateAccountModal({ isOpen, onClose, onSubmit }: CreateAccountM
               className="w-full px-3 py-2 text-sm bg-white border border-slate-300 rounded-lg text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
             />
             <p className="text-[11px] text-slate-500 mt-1">
-              Account names cannot be renamed later per Section 7.1 rules.
+              Choose a clear, recognizable name for this account.
             </p>
           </div>
 

@@ -119,7 +119,7 @@ export function SettingsPage() {
               )}
             </div>
             <p className="text-xs text-slate-500 mt-1">
-              Display name mapped to <code className="bg-slate-100 px-1 py-0.5 rounded text-[11px]">user_profiles.user_name</code>.
+              Your public display name shown across FinTrack.
             </p>
           </div>
 
@@ -134,14 +134,14 @@ export function SettingsPage() {
               className="w-full max-w-md px-3 py-2 text-sm bg-slate-50 border border-slate-200 rounded-lg text-slate-600 cursor-not-allowed"
             />
             <p className="text-xs text-slate-500 mt-1">
-              Managed securely through Supabase Auth (<code className="bg-slate-100 px-1 py-0.5 rounded text-[11px]">auth.users</code>).
+              Your verified account login email address.
             </p>
           </div>
         </div>
       </Card>
 
       {/* Security Credentials Card */}
-      <Card title="Authentication & Password" subtitle="Manage your Supabase Auth credentials">
+      <Card title="Security & Password" subtitle="Manage your account access and credentials">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
             <p className="text-sm font-semibold text-slate-800">Password Recovery & Reset</p>
@@ -173,7 +173,7 @@ export function SettingsPage() {
             <div className="flex-1">
               <h4 className="text-sm font-semibold text-rose-900">Permanent Account Deletion</h4>
               <p className="text-xs text-rose-700 mt-1 leading-relaxed">
-                As required by <code className="bg-rose-100/80 px-1 py-0.5 rounded text-[11px]">SECURITY.md</code> (Section 8), permanent account deletion requires password/provider re-authentication, irreversible confirmation, and runs through a trusted server-side process that removes auth, profiles, financial accounts, transactions, and audit logs safely.
+                Deleting your account is permanent and irreversible. All your profile data, financial accounts, transaction history, and audit records will be permanently erased.
               </p>
               <div className="mt-3">
                 <Button variant="danger" size="sm" disabled>

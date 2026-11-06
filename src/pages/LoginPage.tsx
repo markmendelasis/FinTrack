@@ -15,7 +15,7 @@ export function LoginPage() {
             Sign in to FinTrack
           </h2>
           <p className="mt-1 text-xs text-slate-500">
-            Personal finance management backed by Supabase & PostgreSQL
+            Smart, secure personal finance tracking
           </p>
         </div>
 
@@ -25,7 +25,7 @@ export function LoginPage() {
 
         <div className="flex items-center justify-center gap-2 text-xs text-slate-400">
           <ShieldCheck className="h-4 w-4 text-emerald-500" />
-          <span>Protected with Row Level Security & Supabase Auth</span>
+          <span>Protected with bank-grade encryption & secure cloud sync</span>
         </div>
       </div>
     </div>

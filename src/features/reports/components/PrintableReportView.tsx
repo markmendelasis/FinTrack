@@ -161,7 +161,7 @@ export function PrintableReportView({ report, filters, userName }: PrintableRepo
 
       {/* Footer Statement */}
       <div className="mt-8 pt-4 border-t border-slate-300 text-[10px] text-slate-500 flex justify-between">
-        <p>FinTrack • Financial integrity guaranteed by PostgreSQL & Supabase</p>
+        <p>FinTrack • Official Financial Statement</p>
         <p>Currency: Philippine Peso (₱) • Confidential</p>
       </div>
     </div>

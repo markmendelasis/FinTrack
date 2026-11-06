@@ -94,7 +94,7 @@ export function AccountCard({
       <div className="mt-5 pt-3 border-t border-slate-100 flex items-baseline justify-between">
         <div>
           <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-500">
-            Calculated Balance
+            Current Balance
           </span>
           <p className="text-2xl font-black text-slate-900 tracking-tight mt-0.5">
             {formatCurrency(account.calculated_balance)}

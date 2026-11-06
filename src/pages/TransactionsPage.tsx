@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
-import { Plus, ArrowLeftRight, ChevronLeft, ChevronRight, ShieldCheck } from 'lucide-react';
+import { Plus, ArrowLeftRight, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useTransactions } from '@/features/transactions/hooks/useTransactions';
 import { useAccounts } from '@/features/accounts/hooks/useAccounts';
 import { TransactionCard } from '@/features/transactions/components/TransactionCard';
@@ -51,7 +51,7 @@ export function TransactionsPage() {
         <div>
           <h2 className="text-xl font-bold text-slate-900">Transactions</h2>
           <p className="text-xs sm:text-sm text-slate-500">
-            Record Income, Expense, and Transfers with PostgreSQL balance validation.
+            Record and manage your income, expenses, and account transfers.
           </p>
         </div>
         <div className="flex items-center gap-2">
@@ -59,17 +59,6 @@ export function TransactionsPage() {
             <Plus className="h-4 w-4 mr-1.5" />
             New Transaction
           </Button>
-        </div>
-      </div>
-
-      {/* Rules Notice */}
-      <div className="rounded-xl border border-blue-200/80 bg-blue-50/70 p-4 text-xs text-blue-900 flex items-start gap-3">
-        <ShieldCheck className="h-5 w-5 text-blue-700 shrink-0 mt-0.5" />
-        <div className="space-y-1">
-          <p className="font-semibold text-blue-950">Financial Integrity Enforcement (Section 7.2–7.11)</p>
-          <p className="text-blue-800 leading-relaxed">
-            Expenses and transfers reject operations that cause negative balances. Transfer transactions are immutable. Soft deletion and edits reverse financial effects atomically with full audit history.
-          </p>
         </div>
       </div>
 

@@ -105,7 +105,7 @@ export function EditInitialBalanceModal({
               />
             </div>
             <p className="text-[11px] text-slate-500 mt-1">
-              Per Section 7.1 rules, once this account has transaction records, its opening balance is permanently locked.
+              Opening balance cannot be modified once transactions have been recorded on this account.
             </p>
           </div>
 

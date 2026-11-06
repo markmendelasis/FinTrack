@@ -84,7 +84,7 @@ export function TransactionAuditLogModal({
                 <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
                 <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
               </svg>
-              Retrieving immutable audit records...
+              Retrieving audit records...
             </div>
           ) : error ? (
             <div className="rounded-lg bg-rose-50 border border-rose-200 p-4 text-xs text-rose-800 text-center">
@@ -118,8 +118,8 @@ export function TransactionAuditLogModal({
                 </p>
 
                 <div className="flex items-center justify-between text-[11px] text-slate-500 pt-1 border-t border-slate-200/60">
-                  <span className="font-mono text-[10px] truncate max-w-xs" title={`Actor UUID: ${log.performed_by}`}>
-                    Actor: {log.performed_by.slice(0, 8)}...
+                  <span className="text-[11px] text-slate-400">
+                    Recorded to Permanent Ledger
                   </span>
                   <span className="inline-flex items-center gap-1 text-emerald-700 font-medium">
                     <ShieldCheck className="h-3 w-3" />

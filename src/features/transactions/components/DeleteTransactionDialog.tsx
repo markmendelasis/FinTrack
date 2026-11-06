@@ -89,10 +89,10 @@ export function DeleteTransactionDialog({
         </div>
 
         <div className="rounded-lg bg-amber-50 border border-amber-200/80 p-3 text-xs text-amber-900 space-y-1 mb-5">
-          <p className="font-semibold">Reversal Effect (Section 7.11):</p>
+          <p className="font-semibold">Balance Effect:</p>
           <p className="text-amber-800 leading-relaxed">{getReversalExplanation()}</p>
           <p className="text-[11px] text-amber-700 font-medium pt-1">
-            If this reversal would cause any account balance to become negative, PostgreSQL will reject the deletion and leave your records unchanged.
+            If deleting this transaction would cause any account balance to drop below zero, the deletion will be prevented to protect your balance integrity.
           </p>
         </div>
 

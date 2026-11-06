@@ -30,8 +30,8 @@ const mainNavItems: NavItem[] = [
   { name: 'Accounts', to: '/accounts', icon: Wallet },
   { name: 'Transactions', to: '/transactions', icon: ArrowLeftRight },
   { name: 'Reports', to: '/reports', icon: FileText },
-  { name: 'Budgets', to: '/budgets', icon: PieChart, badge: 'Planned', badgeColor: 'bg-amber-100 text-amber-700' },
-  { name: 'Savings Goals', to: '/goals', icon: Target, badge: 'Planned', badgeColor: 'bg-amber-100 text-amber-700' },
+  { name: 'Budgets', to: '/budgets', icon: PieChart, badge: 'Soon', badgeColor: 'bg-emerald-950 text-emerald-400 border border-emerald-800/60' },
+  { name: 'Savings Goals', to: '/goals', icon: Target, badge: 'Soon', badgeColor: 'bg-teal-950 text-teal-400 border border-teal-800/60' },
   { name: 'Settings', to: '/settings', icon: Settings },
 ];
 
@@ -112,8 +112,8 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
           <div className="flex items-center gap-2 rounded-lg bg-slate-800/60 p-2.5 text-xs text-slate-300 border border-slate-700/60">
             <ShieldCheck className="h-4 w-4 text-emerald-400 shrink-0" />
             <div className="text-[11px]">
-              <p className="font-medium text-white">PostgreSQL RLS Active</p>
-              <p className="text-slate-400">Audit Trigger Logging</p>
+              <p className="font-medium text-white">Bank-Grade Security</p>
+              <p className="text-slate-400">Encrypted Cloud Sync</p>
             </div>
           </div>
         </div>

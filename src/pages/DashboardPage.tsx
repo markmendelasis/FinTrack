@@ -1,10 +1,12 @@
+import { Link } from 'react-router-dom';
 import { Card } from '@/components/ui/Card';
-import { ShieldCheck, CheckCircle2, Calendar } from 'lucide-react';
+import { ShieldCheck, Calendar, Wallet, ArrowRight } from 'lucide-react';
 import { useAuth } from '@/features/auth/hooks/useAuth';
 import { useDashboardData } from '@/features/dashboard/hooks/useDashboardData';
 import { DashboardSummaryCards } from '@/features/dashboard/components/DashboardSummaryCards';
 import { ExpenseCategoryChart } from '@/features/dashboard/components/ExpenseCategoryChart';
 import { RecentTransactionsWidget } from '@/features/dashboard/components/RecentTransactionsWidget';
+import { formatCurrency } from '@/lib/utils/formatters';
 
 export function DashboardPage() {
   const { user, profile } = useAuth();
@@ -33,7 +35,7 @@ export function DashboardPage() {
         <div className="flex flex-wrap items-center gap-2">
           <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/20 px-3 py-1 text-xs font-medium text-emerald-200 border border-emerald-400/30">
             <ShieldCheck className="h-3.5 w-3.5 text-emerald-400" />
-            Live PostgreSQL RPC & Integrity Active
+            Personal Finance Dashboard
           </span>
           <span className="inline-flex items-center gap-1.5 text-xs text-emerald-200/80">
             <Calendar className="h-3.5 w-3.5" />
@@ -45,8 +47,7 @@ export function DashboardPage() {
           Welcome back, {displayName}
         </h2>
         <p className="mt-1 text-sm text-emerald-100 max-w-2xl">
-          Track income, manage expenses, and monitor financial account balances with
-          database-guaranteed precision.
+          Track income, manage expenses, and monitor financial account balances in real time.
         </p>
       </div>
 
@@ -66,76 +67,57 @@ export function DashboardPage() {
         />
       </div>
 
-      {/* System Integrity & Milestones Verification Card */}
+      {/* Active Accounts Snapshot */}
       <Card
-        title="System Architecture & Integrity Status"
-        subtitle="Milestones 1–6 Verification & Compliance"
+        title="Your Accounts"
+        subtitle="Current balances across your active financial accounts"
+        action={
+          <Link
+            to="/accounts"
+            className="text-xs font-semibold text-emerald-600 hover:text-emerald-700 flex items-center gap-1 transition-colors"
+          >
+            Manage Accounts <ArrowRight className="h-3.5 w-3.5" />
+          </Link>
+        }
       >
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-          <div className="space-y-3">
-            <div className="flex items-start gap-2.5">
-              <CheckCircle2 className="h-5 w-5 text-emerald-600 shrink-0 mt-0.5" />
-              <div>
-                <p className="font-semibold text-slate-800">Dynamic PostgreSQL Balance Calculation</p>
-                <p className="text-xs text-slate-500">
-                  Balances are dynamically calculated from opening balance + active transactions via <code className="text-emerald-700 bg-emerald-50 px-1 py-0.5 rounded">calculate_account_balance</code>.
-                </p>
-              </div>
-            </div>
-
-            <div className="flex items-start gap-2.5">
-              <CheckCircle2 className="h-5 w-5 text-emerald-600 shrink-0 mt-0.5" />
-              <div>
-                <p className="font-semibold text-slate-800">Atomic Financial RPC Operations</p>
-                <p className="text-xs text-slate-500">
-                  Overdraft prevention, atomic transfers, initial balance locking, and safe soft-deletions enforced in PostgreSQL.
-                </p>
-              </div>
-            </div>
-
-            <div className="flex items-start gap-2.5">
-              <CheckCircle2 className="h-5 w-5 text-emerald-600 shrink-0 mt-0.5" />
-              <div>
-                <p className="font-semibold text-slate-800">Dedicated Feature Modules</p>
-                <p className="text-xs text-slate-500">
-                  Transactions managed strictly in the Transactions module; financial accounts managed in the Accounts module.
-                </p>
-              </div>
-            </div>
+        {isLoading ? (
+          <div className="py-8 text-center text-xs text-slate-400">Loading accounts...</div>
+        ) : activeAccounts.length === 0 ? (
+          <div className="py-8 text-center text-xs text-slate-500">
+            No active accounts. <Link to="/accounts" className="text-emerald-600 font-semibold underline">Add your first account</Link>
           </div>
-
-          <div className="space-y-3">
-            <div className="flex items-start gap-2.5">
-              <CheckCircle2 className="h-5 w-5 text-emerald-600 shrink-0 mt-0.5" />
-              <div>
-                <p className="font-semibold text-slate-800">Automated Audit Trail Logging</p>
-                <p className="text-xs text-slate-500">
-                  Transaction mutations and soft deletions automatically recorded in account and transaction audit tables with readable account names.
-                </p>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {activeAccounts.map((account) => (
+              <div
+                key={account.account_id}
+                className="flex items-center justify-between p-3.5 rounded-xl border border-slate-200/80 bg-slate-50/50 hover:bg-white hover:border-slate-300 hover:shadow-xs transition-all"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-100 text-emerald-700 shrink-0">
+                    <Wallet className="h-5 w-5" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-bold text-slate-800 leading-tight">
+                      {account.account_name}
+                    </p>
+                    <span className="text-[10px] font-medium text-slate-400">
+                      {account.account_name.toLowerCase() === 'cash wallet' ? 'Default Wallet' : 'Financial Account'}
+                    </span>
+                  </div>
+                </div>
+                <div className="text-right">
+                  <p className="text-sm font-bold text-slate-900">
+                    {formatCurrency(account.calculated_balance)}
+                  </p>
+                  <span className="inline-block text-[10px] font-semibold text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded-full">
+                    Active
+                  </span>
+                </div>
               </div>
-            </div>
-
-            <div className="flex items-start gap-2.5">
-              <CheckCircle2 className="h-5 w-5 text-emerald-600 shrink-0 mt-0.5" />
-              <div>
-                <p className="font-semibold text-slate-800">Philippine Peso Standard (PHP ₱)</p>
-                <p className="text-xs text-slate-500">
-                  Standardized on Philippine Peso (<code className="text-slate-800 bg-slate-100 px-1 py-0.5 rounded">₱</code>) with exact <code className="text-slate-800 bg-slate-100 px-1 py-0.5 rounded">NUMERIC(12,2)</code> precision.
-                </p>
-              </div>
-            </div>
-
-            <div className="flex items-start gap-2.5">
-              <CheckCircle2 className="h-5 w-5 text-emerald-600 shrink-0 mt-0.5" />
-              <div>
-                <p className="font-semibold text-slate-800">Supabase Auth & Row Level Security</p>
-                <p className="text-xs text-slate-500">
-                  Strict user isolation on all tables with JWT-authenticated database sessions.
-                </p>
-              </div>
-            </div>
+            ))}
           </div>
-        </div>
+        )}
       </Card>
     </div>
   );

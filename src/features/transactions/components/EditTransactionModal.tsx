@@ -223,7 +223,7 @@ export function EditTransactionModal({
             <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1 flex items-center justify-between">
               <span>Transaction Date</span>
               <span className="text-[10px] text-slate-400 font-normal inline-flex items-center gap-1">
-                <Lock className="h-3 w-3" /> Immutable (Section 7.8)
+                <Lock className="h-3 w-3" /> Original Date Locked
               </span>
             </label>
             <input

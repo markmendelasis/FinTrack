@@ -15,7 +15,7 @@ export function RegisterPage() {
             Create your account
           </h2>
           <p className="mt-1 text-xs text-slate-500">
-            Registration automatically provisions your profile and default Cash Wallet
+            Start tracking your cash flow, savings, and expenses today
           </p>
         </div>
 
@@ -25,7 +25,7 @@ export function RegisterPage() {
 
         <div className="flex items-center justify-center gap-2 text-xs text-slate-400">
           <ShieldCheck className="h-4 w-4 text-emerald-500" />
-          <span>Automatic Cash Wallet provisioning via PostgreSQL RPC</span>
+          <span>Includes a default Cash Wallet ready for your first entry</span>
         </div>
       </div>
     </div>
