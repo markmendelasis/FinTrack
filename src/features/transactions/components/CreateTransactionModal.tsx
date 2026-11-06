@@ -1,4 +1,4 @@
-import { useState, type FormEvent } from 'react';
+import { useState, useEffect, type FormEvent } from 'react';
 import { Button } from '@/components/ui/Button';
 import { X, TrendingUp, TrendingDown, ArrowLeftRight, AlertCircle } from 'lucide-react';
 import type {
@@ -19,6 +19,7 @@ interface CreateTransactionModalProps {
   onCreateIncome: (input: CreateIncomeInput) => Promise<void>;
   onCreateExpense: (input: CreateExpenseInput) => Promise<void>;
   onCreateTransfer: (input: CreateTransferInput) => Promise<void>;
+  initialTab?: 'Expense' | 'Income' | 'Transfer';
 }
 
 export function CreateTransactionModal({
@@ -29,8 +30,9 @@ export function CreateTransactionModal({
   onCreateIncome,
   onCreateExpense,
   onCreateTransfer,
+  initialTab = 'Expense',
 }: CreateTransactionModalProps) {
-  const [activeTab, setActiveTab] = useState<'Expense' | 'Income' | 'Transfer'>('Expense');
+  const [activeTab, setActiveTab] = useState<'Expense' | 'Income' | 'Transfer'>(initialTab);
   const [accountId, setAccountId] = useState('');
   const [destinationAccountId, setDestinationAccountId] = useState('');
   const [categoryId, setCategoryId] = useState('');
@@ -42,6 +44,13 @@ export function CreateTransactionModal({
   const [description, setDescription] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (isOpen) {
+      setActiveTab(initialTab);
+      setError(null);
+    }
+  }, [isOpen, initialTab]);
 
   if (!isOpen) return null;
 
