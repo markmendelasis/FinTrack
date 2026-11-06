@@ -83,7 +83,7 @@ export interface Database {
           description: string | null;
           status: 'ACTIVE' | 'INACTIVE';
           created_at: string;
-          created_by: string;
+          created_by: string | null;
           updated_at: string | null;
           updated_by: string | null;
         };
@@ -93,7 +93,7 @@ export interface Database {
           description?: string | null;
           status?: 'ACTIVE' | 'INACTIVE';
           created_at?: string;
-          created_by: string;
+          created_by?: string | null;
           updated_at?: string | null;
           updated_by?: string | null;
         };
@@ -103,7 +103,7 @@ export interface Database {
           description?: string | null;
           status?: 'ACTIVE' | 'INACTIVE';
           created_at?: string;
-          created_by?: string;
+          created_by?: string | null;
           updated_at?: string | null;
           updated_by?: string | null;
         };
@@ -116,7 +116,7 @@ export interface Database {
           description: string | null;
           status: 'ACTIVE' | 'INACTIVE';
           created_at: string;
-          created_by: string;
+          created_by: string | null;
           updated_at: string | null;
           updated_by: string | null;
         };
@@ -127,7 +127,7 @@ export interface Database {
           description?: string | null;
           status?: 'ACTIVE' | 'INACTIVE';
           created_at?: string;
-          created_by: string;
+          created_by?: string | null;
           updated_at?: string | null;
           updated_by?: string | null;
         };
@@ -138,7 +138,7 @@ export interface Database {
           description?: string | null;
           status?: 'ACTIVE' | 'INACTIVE';
           created_at?: string;
-          created_by?: string;
+          created_by?: string | null;
           updated_at?: string | null;
           updated_by?: string | null;
         };
@@ -294,7 +294,87 @@ export interface Database {
       };
     };
     Views: Record<string, never>;
-    Functions: Record<string, never>;
+    Functions: {
+      calculate_account_balance: {
+        Args: { p_account_id: string };
+        Returns: number;
+      };
+      create_user_profile_and_default_account: {
+        Args: { p_user_name: string };
+        Returns: string;
+      };
+      create_account: {
+        Args: { p_account_name: string; p_initial_balance?: number };
+        Returns: string;
+      };
+      update_account_initial_balance: {
+        Args: { p_account_id: string; p_new_initial_balance: number };
+        Returns: void;
+      };
+      deactivate_account: {
+        Args: { p_account_id: string };
+        Returns: void;
+      };
+      reactivate_account: {
+        Args: { p_account_id: string };
+        Returns: void;
+      };
+      create_income_transaction: {
+        Args: {
+          p_account_id: string;
+          p_category_id: string;
+          p_amount: number;
+          p_transaction_date: string;
+          p_description?: string | null;
+        };
+        Returns: string;
+      };
+      create_expense_transaction: {
+        Args: {
+          p_account_id: string;
+          p_category_id: string;
+          p_amount: number;
+          p_transaction_date: string;
+          p_description?: string | null;
+        };
+        Returns: string;
+      };
+      create_transfer_transaction: {
+        Args: {
+          p_source_account_id: string;
+          p_destination_account_id: string;
+          p_amount: number;
+          p_transfer_fee?: number;
+          p_transaction_date?: string;
+          p_description?: string | null;
+        };
+        Returns: string;
+      };
+      edit_income_expense_transaction: {
+        Args: {
+          p_transaction_id: string;
+          p_new_account_id: string;
+          p_new_category_id: string;
+          p_new_transaction_type_id: string;
+          p_new_amount: number;
+          p_new_description?: string | null;
+        };
+        Returns: void;
+      };
+      soft_delete_transaction: {
+        Args: { p_transaction_id: string };
+        Returns: void;
+      };
+      get_dashboard_summary: {
+        Args: Record<string, never>;
+        Returns: {
+          total_balance: number;
+          total_income: number;
+          total_expense: number;
+          total_transfer_fees: number;
+        };
+      };
+    };
     Enums: Record<string, never>;
   };
 }
