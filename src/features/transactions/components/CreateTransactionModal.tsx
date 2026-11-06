@@ -64,8 +64,6 @@ export function CreateTransactionModal({
   if (!isOpen) return null;
 
   const activeAccounts = accounts.filter((a) => a.status === 'ACTIVE');
-  const selectedAccount = activeAccounts.find((a) => a.account_id === accountId);
-  const selectedDestAccount = activeAccounts.find((a) => a.account_id === destinationAccountId);
   const todayStr = new Date().toISOString().split('T')[0];
 
   // Match categories by type name
@@ -280,58 +278,6 @@ export function CreateTransactionModal({
                   </option>
                 ))}
               </select>
-
-              {/* Live Available Balance Card */}
-              {selectedAccount && (
-                <div className="mt-2 rounded-xl bg-slate-50 border border-slate-200/80 p-3 flex items-center justify-between text-xs animate-in fade-in duration-150">
-                  <div className="flex items-center gap-2.5">
-                    <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-100 text-emerald-700 font-bold text-xs">
-                      ₱
-                    </div>
-                    <div>
-                      <span className="text-[10px] uppercase font-semibold text-slate-500 block">
-                        {activeTab === 'Transfer' ? 'Source Available Balance' : 'Available Balance'}
-                      </span>
-                      <span className="text-sm font-bold text-slate-900">
-                        {formatCurrency(selectedAccount.calculated_balance)}
-                      </span>
-                    </div>
-                  </div>
-                  {activeTab !== 'Income' && Number(amount) > 0 && (
-                    <div className="text-right">
-                      <span className="text-[10px] uppercase font-semibold text-slate-500 block">
-                        Projected Balance
-                      </span>
-                      <span
-                        className={`text-xs font-bold ${
-                          selectedAccount.calculated_balance -
-                            Number(amount) -
-                            (activeTab === 'Transfer' ? Number(transferFee) || 0 : 0) <
-                          0
-                            ? 'text-rose-600'
-                            : 'text-emerald-700'
-                        }`}
-                      >
-                        {formatCurrency(
-                          selectedAccount.calculated_balance -
-                            Number(amount) -
-                            (activeTab === 'Transfer' ? Number(transferFee) || 0 : 0)
-                        )}
-                      </span>
-                    </div>
-                  )}
-                  {activeTab === 'Income' && Number(amount) > 0 && (
-                    <div className="text-right">
-                      <span className="text-[10px] uppercase font-semibold text-slate-500 block">
-                        Projected Balance
-                      </span>
-                      <span className="text-xs font-bold text-emerald-700">
-                        {formatCurrency(selectedAccount.calculated_balance + Number(amount))}
-                      </span>
-                    </div>
-                  )}
-                </div>
-              )}
             </div>
 
             {/* Destination Account (Transfer only) */}
@@ -355,35 +301,6 @@ export function CreateTransactionModal({
                       </option>
                     ))}
                 </select>
-
-                {/* Destination Live Balance Card */}
-                {selectedDestAccount && (
-                  <div className="mt-2 rounded-xl bg-slate-50 border border-slate-200/80 p-3 flex items-center justify-between text-xs animate-in fade-in duration-150">
-                    <div className="flex items-center gap-2.5">
-                      <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-100 text-blue-700 font-bold text-xs">
-                        ₱
-                      </div>
-                      <div>
-                        <span className="text-[10px] uppercase font-semibold text-slate-500 block">
-                          Destination Current Balance
-                        </span>
-                        <span className="text-sm font-bold text-slate-900">
-                          {formatCurrency(selectedDestAccount.calculated_balance)}
-                        </span>
-                      </div>
-                    </div>
-                    {Number(amount) > 0 && (
-                      <div className="text-right">
-                        <span className="text-[10px] uppercase font-semibold text-slate-500 block">
-                          Projected Balance
-                        </span>
-                        <span className="text-xs font-bold text-emerald-700">
-                          {formatCurrency(selectedDestAccount.calculated_balance + Number(amount))}
-                        </span>
-                      </div>
-                    )}
-                  </div>
-                )}
               </div>
             )}
 
