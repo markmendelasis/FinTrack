@@ -21,12 +21,12 @@ export function AppLayout() {
   const currentTitle = routeTitles[location.pathname] || 'FinTrack';
 
   return (
-    <div className="flex min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-slate-50 flex flex-col">
       {/* Sidebar navigation */}
       <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
-      {/* Main layout container */}
-      <div className="flex flex-1 flex-col overflow-x-hidden min-w-0">
+      {/* Main layout container (offset for fixed sidebar on lg screens) */}
+      <div className="flex flex-1 flex-col overflow-x-hidden min-w-0 lg:pl-64">
         <Header
           onToggleSidebar={() => setSidebarOpen((prev) => !prev)}
           title={currentTitle}
