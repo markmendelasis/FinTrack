@@ -10,10 +10,16 @@ import { CreateTransactionModal } from '@/features/transactions/components/Creat
 import { EditTransactionModal } from '@/features/transactions/components/EditTransactionModal';
 import { DeleteTransactionDialog } from '@/features/transactions/components/DeleteTransactionDialog';
 import { TransactionAuditLogModal } from '@/features/transactions/components/TransactionAuditLogModal';
-import type { TransactionWithDetails } from '@/features/transactions/types/transaction.types';
+import type {
+  TransactionWithDetails,
+  CreateIncomeInput,
+  CreateExpenseInput,
+  CreateTransferInput,
+  EditTransactionInput,
+} from '@/features/transactions/types/transaction.types';
 
 export function TransactionsPage() {
-  const { allAccounts } = useAccounts();
+  const { allAccounts, fetchAccounts } = useAccounts();
   const {
     transactions,
     totalCount,
@@ -33,6 +39,36 @@ export function TransactionsPage() {
   const [selectedForEdit, setSelectedForEdit] = useState<TransactionWithDetails | null>(null);
   const [selectedForDelete, setSelectedForDelete] = useState<TransactionWithDetails | null>(null);
   const [selectedForAudit, setSelectedForAudit] = useState<TransactionWithDetails | null>(null);
+
+  const handleCreateIncome = async (input: CreateIncomeInput) => {
+    await createIncome(input);
+    await fetchAccounts();
+  };
+
+  const handleCreateExpense = async (input: CreateExpenseInput) => {
+    await createExpense(input);
+    await fetchAccounts();
+  };
+
+  const handleCreateTransfer = async (input: CreateTransferInput) => {
+    await createTransfer(input);
+    await fetchAccounts();
+  };
+
+  const handleEditTransaction = async (input: EditTransactionInput) => {
+    await editIncomeExpense(input);
+    await fetchAccounts();
+  };
+
+  const handleDeleteTransaction = async (transactionId: string) => {
+    await softDeleteTransaction(transactionId);
+    await fetchAccounts();
+  };
+
+  const handleOpenCreateModal = () => {
+    fetchAccounts();
+    setIsCreateOpen(true);
+  };
 
   const currentPage = filters.page || 1;
   const pageSize = filters.pageSize || 20;
@@ -55,7 +91,7 @@ export function TransactionsPage() {
           </p>
         </div>
         <div className="flex items-center gap-2">
-          <Button variant="primary" size="md" onClick={() => setIsCreateOpen(true)}>
+          <Button variant="primary" size="md" onClick={handleOpenCreateModal}>
             <Plus className="h-4 w-4 mr-1.5" />
             New Transaction
           </Button>
@@ -91,7 +127,7 @@ export function TransactionsPage() {
               Record an income, expense, or transfer to start tracking your financial activity.
             </p>
             <div className="mt-4">
-              <Button variant="primary" size="sm" onClick={() => setIsCreateOpen(true)}>
+              <Button variant="primary" size="sm" onClick={handleOpenCreateModal}>
                 <Plus className="h-4 w-4 mr-1.5" />
                 Record First Transaction
               </Button>
@@ -159,9 +195,10 @@ export function TransactionsPage() {
         transactionTypes={transactionTypes}
         categories={categories}
         accounts={allAccounts}
-        onCreateIncome={createIncome}
-        onCreateExpense={createExpense}
-        onCreateTransfer={createTransfer}
+        onRefreshAccounts={fetchAccounts}
+        onCreateIncome={handleCreateIncome}
+        onCreateExpense={handleCreateExpense}
+        onCreateTransfer={handleCreateTransfer}
       />
 
       <EditTransactionModal
@@ -171,14 +208,14 @@ export function TransactionsPage() {
         transactionTypes={transactionTypes}
         categories={categories}
         accounts={allAccounts}
-        onSave={editIncomeExpense}
+        onSave={handleEditTransaction}
       />
 
       <DeleteTransactionDialog
         transaction={selectedForDelete}
         isOpen={!!selectedForDelete}
         onClose={() => setSelectedForDelete(null)}
-        onConfirm={softDeleteTransaction}
+        onConfirm={handleDeleteTransaction}
       />
 
       <TransactionAuditLogModal

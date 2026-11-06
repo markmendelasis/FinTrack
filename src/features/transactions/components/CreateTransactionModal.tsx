@@ -1,6 +1,6 @@
 import { useState, useEffect, type FormEvent } from 'react';
 import { Button } from '@/components/ui/Button';
-import { formatErrorMessage } from '@/lib/utils/formatters';
+import { formatCurrency, formatErrorMessage } from '@/lib/utils/formatters';
 import { X, TrendingUp, TrendingDown, ArrowLeftRight, AlertCircle } from 'lucide-react';
 import type {
   TransactionType,
@@ -17,6 +17,7 @@ interface CreateTransactionModalProps {
   transactionTypes: TransactionType[];
   categories: Category[];
   accounts: AccountWithBalance[];
+  onRefreshAccounts?: () => Promise<void> | void;
   onCreateIncome: (input: CreateIncomeInput) => Promise<void>;
   onCreateExpense: (input: CreateExpenseInput) => Promise<void>;
   onCreateTransfer: (input: CreateTransferInput) => Promise<void>;
@@ -28,6 +29,7 @@ export function CreateTransactionModal({
   onClose,
   categories,
   accounts,
+  onRefreshAccounts,
   onCreateIncome,
   onCreateExpense,
   onCreateTransfer,
@@ -50,12 +52,20 @@ export function CreateTransactionModal({
     if (isOpen) {
       setActiveTab(initialTab);
       setError(null);
+      setAmount('');
+      setDescription('');
+      setTransferFee('0.00');
+      setCategoryId('');
+      setTransactionDate(new Date().toISOString().split('T')[0]);
+      onRefreshAccounts?.();
     }
-  }, [isOpen, initialTab]);
+  }, [isOpen, initialTab, onRefreshAccounts]);
 
   if (!isOpen) return null;
 
   const activeAccounts = accounts.filter((a) => a.status === 'ACTIVE');
+  const selectedAccount = activeAccounts.find((a) => a.account_id === accountId);
+  const selectedDestAccount = activeAccounts.find((a) => a.account_id === destinationAccountId);
   const todayStr = new Date().toISOString().split('T')[0];
 
   // Match categories by type name
@@ -156,6 +166,7 @@ export function CreateTransactionModal({
         });
       }
 
+      await onRefreshAccounts?.();
       onClose();
     } catch (err: unknown) {
       const message = formatErrorMessage(err, 'Transaction was not successfully created');
@@ -265,10 +276,62 @@ export function CreateTransactionModal({
                 <option value="">Select active account...</option>
                 {activeAccounts.map((acc) => (
                   <option key={acc.account_id} value={acc.account_id}>
-                    {acc.account_name} (Avail: ₱{acc.calculated_balance.toFixed(2)})
+                    {acc.account_name} (Available: {formatCurrency(acc.calculated_balance)})
                   </option>
                 ))}
               </select>
+
+              {/* Live Available Balance Card */}
+              {selectedAccount && (
+                <div className="mt-2 rounded-xl bg-slate-50 border border-slate-200/80 p-3 flex items-center justify-between text-xs animate-in fade-in duration-150">
+                  <div className="flex items-center gap-2.5">
+                    <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-100 text-emerald-700 font-bold text-xs">
+                      ₱
+                    </div>
+                    <div>
+                      <span className="text-[10px] uppercase font-semibold text-slate-500 block">
+                        {activeTab === 'Transfer' ? 'Source Available Balance' : 'Available Balance'}
+                      </span>
+                      <span className="text-sm font-bold text-slate-900">
+                        {formatCurrency(selectedAccount.calculated_balance)}
+                      </span>
+                    </div>
+                  </div>
+                  {activeTab !== 'Income' && Number(amount) > 0 && (
+                    <div className="text-right">
+                      <span className="text-[10px] uppercase font-semibold text-slate-500 block">
+                        Projected Balance
+                      </span>
+                      <span
+                        className={`text-xs font-bold ${
+                          selectedAccount.calculated_balance -
+                            Number(amount) -
+                            (activeTab === 'Transfer' ? Number(transferFee) || 0 : 0) <
+                          0
+                            ? 'text-rose-600'
+                            : 'text-emerald-700'
+                        }`}
+                      >
+                        {formatCurrency(
+                          selectedAccount.calculated_balance -
+                            Number(amount) -
+                            (activeTab === 'Transfer' ? Number(transferFee) || 0 : 0)
+                        )}
+                      </span>
+                    </div>
+                  )}
+                  {activeTab === 'Income' && Number(amount) > 0 && (
+                    <div className="text-right">
+                      <span className="text-[10px] uppercase font-semibold text-slate-500 block">
+                        Projected Balance
+                      </span>
+                      <span className="text-xs font-bold text-emerald-700">
+                        {formatCurrency(selectedAccount.calculated_balance + Number(amount))}
+                      </span>
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
 
             {/* Destination Account (Transfer only) */}
@@ -288,10 +351,39 @@ export function CreateTransactionModal({
                     .filter((acc) => acc.account_id !== accountId)
                     .map((acc) => (
                       <option key={acc.account_id} value={acc.account_id}>
-                        {acc.account_name} (Current: ₱{acc.calculated_balance.toFixed(2)})
+                        {acc.account_name} (Current: {formatCurrency(acc.calculated_balance)})
                       </option>
                     ))}
                 </select>
+
+                {/* Destination Live Balance Card */}
+                {selectedDestAccount && (
+                  <div className="mt-2 rounded-xl bg-slate-50 border border-slate-200/80 p-3 flex items-center justify-between text-xs animate-in fade-in duration-150">
+                    <div className="flex items-center gap-2.5">
+                      <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-100 text-blue-700 font-bold text-xs">
+                        ₱
+                      </div>
+                      <div>
+                        <span className="text-[10px] uppercase font-semibold text-slate-500 block">
+                          Destination Current Balance
+                        </span>
+                        <span className="text-sm font-bold text-slate-900">
+                          {formatCurrency(selectedDestAccount.calculated_balance)}
+                        </span>
+                      </div>
+                    </div>
+                    {Number(amount) > 0 && (
+                      <div className="text-right">
+                        <span className="text-[10px] uppercase font-semibold text-slate-500 block">
+                          Projected Balance
+                        </span>
+                        <span className="text-xs font-bold text-emerald-700">
+                          {formatCurrency(selectedDestAccount.calculated_balance + Number(amount))}
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
             )}
 
