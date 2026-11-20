@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Menu, Bell, LogOut, ChevronDown } from 'lucide-react';
+import { Menu, LogOut, ChevronDown } from 'lucide-react';
 import { useAuth } from '@/features/auth/hooks/useAuth';
 
 interface HeaderProps {
@@ -39,21 +39,8 @@ export function Header({ onToggleSidebar, title }: HeaderProps) {
       </div>
 
       <div className="flex items-center gap-2 sm:gap-4">
-        <div className="hidden sm:flex items-center text-xs font-medium text-emerald-800 bg-emerald-50 border border-emerald-200 rounded-full px-3 py-1">
-          <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 mr-1.5 animate-pulse"></span>
-          PHP (₱) Only
-        </div>
-
-        <button
-          type="button"
-          className="rounded-lg p-2 text-slate-400 hover:bg-slate-100 hover:text-slate-600 transition-colors"
-          aria-label="Notifications"
-        >
-          <Bell className="h-5 w-5" />
-        </button>
-
         {/* User profile dropdown */}
-        <div className="relative pl-2 border-l border-slate-200">
+        <div className="relative pl-2 border-slate-200">
           <button
             type="button"
             onClick={() => setDropdownOpen((prev) => !prev)}

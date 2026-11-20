@@ -382,6 +382,21 @@ export interface Database {
           total_transfer_fees: number;
         };
       };
+      clear_all_transactional_data: {
+        Args: {
+          p_reset_initial_balances?: boolean;
+          p_clear_all_account_logs?: boolean;
+        };
+        Returns: Json;
+      };
+      clear_user_transactional_data: {
+        Args: {
+          p_user_id?: string;
+          p_reset_initial_balances?: boolean;
+          p_clear_all_account_logs?: boolean;
+        };
+        Returns: Json;
+      };
     };
     Enums: Record<string, never>;
   };

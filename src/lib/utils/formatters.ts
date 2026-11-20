@@ -56,6 +56,8 @@ export function formatErrorMessage(err: unknown, actionContext?: string): string
     }
   }
 
+  console.log(reason);
+
   // Strip Postgres exception codes like "P0001: " or "error: "
   reason = reason.replace(/^[A-Z0-9]{5}:\s*/, '');
   reason = reason.replace(/^error:\s*/i, '');
@@ -65,5 +67,8 @@ export function formatErrorMessage(err: unknown, actionContext?: string): string
     return `${actionContext}: ${trimmed}`;
   }
 
+  console.log(trimmed);
   return trimmed;
+  
+
 }

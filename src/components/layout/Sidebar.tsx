@@ -60,7 +60,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
             </div>
             <div>
               <span className="text-lg font-bold tracking-tight text-white">FinTrack</span>
-              <span className="block text-[10px] font-medium text-emerald-400 leading-none">Personal Finance</span>
+              <span className="block text-[10px] font-medium text-emerald-400 leading-none">Personal Finance Dashboard</span>
             </div>
           </div>
           <button

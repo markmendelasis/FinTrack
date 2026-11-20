@@ -512,7 +512,7 @@ BEGIN
     -- Check resulting balance
     v_current_balance := public.calculate_account_balance(p_account_id);
     IF (v_current_balance - p_amount) < 0.00 THEN
-        RAISE EXCEPTION 'Insufficient funds: resulting balance cannot be negative (available: ₱%s, requested: ₱%s)',
+        RAISE EXCEPTION 'Insufficient funds: resulting balance cannot be negative (Available Balance: ₱%, Requested: ₱%)',
                         v_current_balance, p_amount;
     END IF;
 
